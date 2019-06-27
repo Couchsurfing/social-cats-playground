@@ -1,0 +1,9 @@
+.gradle
+.idea
+build
+out
+*.iml
+*.ipr
+*.iws
+local.properties
+env_variables.yaml

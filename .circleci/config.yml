@@ -1,0 +1,65 @@
+version: 2
+
+config: &config
+  working_directory: ~/social-cats-playground
+
+  docker:
+    - image: circleci/android:api-29
+
+  environment:
+    TERM: dumb
+    JAVA_TOOL_OPTIONS: "-Xmx1g"
+    GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.workers.max=2 -Dkotlin.incremental=false"
+
+cache_key: &cache_key
+  key: jars-{{ checksum "build.gradle.kts" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+
+jobs:
+  build:
+    <<: *config
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - run:
+          name: Assemble
+          command: ./gradlew build :frontend:android:bundle --full-stacktrace
+
+      - store_artifacts:
+          path: frontend/android/build/outputs/
+      - store_artifacts:
+          path: frontend/android/build/reports/lint-results.html
+      - store_artifacts:
+          path: frontend/web/build/distributions/
+      - store_artifacts:
+          path: build/commit-timestamp.txt
+      - store_artifacts:
+          path: build/reports/
+
+      - run:
+          name: Aggregate Test Results
+          command: |
+            mkdir -p ~/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp --parents {} ~/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/junit
+      - store_artifacts:
+          path: ~/junit
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+
+workflows:
+  version: 2
+
+  commit:
+    jobs:
+      - build
