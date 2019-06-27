@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search">Search...</string>
+    <string name="clear_search_query">Clear search</string>
+    <plurals name="search_classes">
+        <item quantity="one">Search 1 class…</item>
+        <item quantity="other">Search %d classes…</item>
+    </plurals>
+    <string name="dismiss">Dismiss</string>
+    <string name="view_source">View source</string>
+    <string name="updating">Updating class list…</string>
+    <string name="updating_failed">Failed to update class list.</string>
+</resources>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "112402926257",
+    "firebase_url": "https://sweat-monkey.firebaseio.com",
+    "project_id": "sweat-monkey",
+    "storage_bucket": "sweat-monkey.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:112402926257:android:4013ff937166ba8e",
+        "android_client_info": {
+          "package_name": "com.nicolasmilliard.socialcats"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "112402926257-ojt1n5op3mr35sojqlo596qccnakjgn6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nicolasmilliard.socialcats",
+            "certificate_hash": "ae9379347e63874b7b6ad724f7fa00f515bd9c24"
+          }
+        },
+        {
+          "client_id": "112402926257-oidom353r8bct443s9t3o9ulp5ncuml4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxXHsH-RHJugdLZ0s4E5KpwCkk3KxPPno"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "112402926257-oidom353r8bct443s9t3o9ulp5ncuml4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
