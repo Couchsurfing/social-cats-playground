@@ -1,7 +1,5 @@
 plugins {
-  id("kotlin2js")
-  id("kotlin-dce-js")
-  id("org.jetbrains.kotlin.frontend")
+  kotlin("js")
   id("distribution")
   id("com.github.ben-manes.versions")
 }
@@ -9,39 +7,43 @@ plugins {
 group = "com.nicolasmilliard.testjs"
 version = "1.0-SNAPSHOT"
 
-dependencies {
-  implementation(kotlin("stdlib-js"))
-  implementation(Config.Libs.WebFrontend.coroutinesCoreJs)
-  implementation(Config.Libs.WebFrontend.htmlJs)
-  implementation(Config.Libs.WebFrontend.kotlinReact)
-  implementation(Config.Libs.WebFrontend.kotlinReactDom)
-  implementation(Config.Libs.WebFrontend.kotlinReactRouterDom)
-  implementation(Config.Libs.kotlinLoggingJs)
+kotlin {
+  target {
+    nodejs()
+    browser()
+  }
+
+  sourceSets["main"].dependencies {
+    implementation(kotlin("stdlib-js"))
+
+    implementation(Config.Libs.WebFrontend.coroutinesCoreJs)
+    implementation(Config.Libs.WebFrontend.htmlJs)
+    implementation(Config.Libs.WebFrontend.kotlinReact)
+    implementation(Config.Libs.WebFrontend.kotlinReactDom)
+    implementation(Config.Libs.WebFrontend.kotlinReactRouterDom)
+    implementation(Config.Libs.kotlinLoggingJs)
+
+    implementation(npm("firebase", "6.4.0"))
+    implementation(npm("react-firebaseui", "4.0.0"))
+    implementation(npm("react", "16.8.6"))
+    implementation(npm("react-dom", "16.8.6"))
+    implementation(npm("react-router-dom", "5.0.1"))
+  }
 }
 
 tasks {
-  kotlinFrontend {
-    webpack {
-      bundleName = "main"
-      contentPath = file("src/main/web")
-      mode = "production"
-    }
-    npm {
-      dependency("firebase", "6.4.0")
-      dependency("react-firebaseui", "4.0.0")
-      dependency("react", "16.8.6")
-      dependency("react-dom", "16.8.6")
-      dependency("react-router-dom", "5.0.1")
-      devDependency("style-loader", "1.0.0")
-      devDependency("css-loader", "3.2.0")
-    }
-  }
-  compileKotlin2Js {
-    kotlinOptions {
-      moduleKind = "commonjs"
-      sourceMap = true
-    }
-  }
+//  kotlinFrontend {
+//    webpack {
+//      bundleName = "main"
+//      contentPath = file("src/main/web")
+//      mode = "production"
+//    }
+//    npm {
+//      devDependency("style-loader", "1.0.0")
+//      devDependency("css-loader", "3.2.0")
+//    }
+//  }
+
 
   distributions {
     main {
