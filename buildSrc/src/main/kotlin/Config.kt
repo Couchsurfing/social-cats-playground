@@ -1,5 +1,5 @@
 object Config {
-  const val kotlinVersion = "1.3.41"
+  const val kotlinVersion = "1.3.50"
   const val navigationVersion = "2.1.0-rc01"
 
   object Google {
