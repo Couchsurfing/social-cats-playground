@@ -16,7 +16,7 @@ tasks.withType<KotlinCompile> {
 }
 
 dependencies {
-    evaluationDependsOn(":search:model")
+
     api(project(":search:model"))
     api(Config.Libs.Kotlin.Serialization.jdk)
     api(Config.Libs.Kotlin.jdk8)
