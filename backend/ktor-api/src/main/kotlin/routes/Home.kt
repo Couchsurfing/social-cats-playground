@@ -8,6 +8,6 @@ import io.ktor.routing.get
 
 fun Route.home() {
     get("/") {
-        call.respondText("Hello", contentType = ContentType.Text.Plain)
+        call.respondText("Hello World", contentType = ContentType.Text.Plain)
     }
 }

@@ -9,11 +9,11 @@ class SearchLoader(
 ) {
     private val logger = KotlinLogging.logger {}
 
-    suspend fun searchUsers(authToken: String?, input: String?) = flow {
+    suspend fun searchUsers(authToken: String, input: String?) = flow {
         logger.info { "Searching Users" }
         emit(Status.InProgress)
         try {
-            val searchUsers = searchService.searchUsers(authToken, input)
+            val searchUsers = searchService.searchUsers(AUTHORIZATION_SCHEME + authToken, input)
             emit(Status.Success(searchUsers))
         } catch (exception: Throwable) {
             emit(Status.Failure(exception))

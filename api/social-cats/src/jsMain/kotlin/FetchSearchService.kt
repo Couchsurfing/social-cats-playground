@@ -11,7 +11,7 @@ object FetchSearchService : SearchService {
 
     private val listUrl = URL("list", PRODUCTION_PROXY).href
 
-    override suspend fun searchUsers(authToken: String?, input: String?): SearchUsersResult {
+    override suspend fun searchUsers(authToken: String, input: String?): SearchUsersResult {
         val authHeader: dynamic = object {}
         if (authToken != null) authHeader[AUTHORIZATION_HEADER] = "$AUTHORIZATION_SCHEME $authToken"
         return window

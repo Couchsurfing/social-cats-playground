@@ -107,6 +107,7 @@ tasks.withType<KotlinCompile> {
 dependencies {
 
     implementation(project(":search:ui-android"))
+    implementation(project(":auth:ui-androidd"))
 
     debugImplementation(Config.Libs.LeakCanary.leakCanary)
     releaseImplementation(Config.Libs.LeakCanary.leakCanaryNoop)
@@ -133,7 +134,6 @@ dependencies {
     implementation(Config.Libs.Firebase.common)
     implementation(Config.Libs.Firebase.auth)
     implementation(Config.Libs.Firebase.firestore)
-    implementation(Config.Libs.Firebase.uiAuth)
     implementation(Config.Libs.Firebase.uiFirestore)
 
     implementation(Config.Libs.material)

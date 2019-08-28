@@ -54,20 +54,20 @@ class SearchPresenter(
                             if (query != activeQuery) {
                                 activeQuery = query
                                 activeQueryJob?.cancel()
-
-//                                if (query == "") {
-//                                    sendModel(
-//                                        model.copy(
-//                                            queryResults = Model.QueryResults(
-//                                                "",
-//                                                emptyList()
-//                                            )
-//                                        )
-//                                    )
-//                                } else {
+                                var authToken = auth.getIdToken()
+                                if (authToken == null) {
+                                    sendModel(
+                                        model.copy(
+                                            queryResults = Model.QueryResults(
+                                                "",
+                                                emptyList()
+                                            )
+                                        )
+                                    )
+                                } else {
                                     activeQueryJob = launch {
-                                        var authToken = auth.getIdToken()
-                                        searchLoader.searchUsers( authToken, query)
+
+                                        searchLoader.searchUsers(authToken, query)
                                             .collect { result ->
                                                 sendModel(
                                                     when (result) {
@@ -88,7 +88,7 @@ class SearchPresenter(
                                                     }
                                                 )
                                             }
-//                                    }
+                                    }
                                 }
                             }
                         }

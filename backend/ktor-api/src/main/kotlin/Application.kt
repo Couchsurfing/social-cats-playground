@@ -11,16 +11,24 @@ import com.nicolasmilliard.socialcats.searchapi.routes.dummySearch2
 import com.nicolasmilliard.socialcats.searchapi.routes.home
 import com.nicolasmilliard.socialcats.searchapi.routes.search
 import io.ktor.application.Application
+import io.ktor.application.ApplicationCall
 import io.ktor.application.install
 import io.ktor.auth.Authentication
+import io.ktor.features.CallId
 import io.ktor.features.CallLogging
+import io.ktor.features.Compression
+import io.ktor.features.ConditionalHeaders
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
+import io.ktor.features.callIdMdc
+import io.ktor.http.HttpHeaders
 import io.ktor.locations.Locations
+import io.ktor.request.header
 import io.ktor.request.path
 import io.ktor.routing.routing
 import io.ktor.serialization.serialization
 import io.ktor.server.engine.ShutDownUrl
+import kotlinx.atomicfu.atomic
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.apache.http.HttpHost
@@ -42,6 +50,7 @@ fun Application.module(testing: Boolean = false) {
     install(CallLogging) {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
+        callIdMdc("mdc-call-id")
     }
 
     install(DefaultHeaders)
@@ -63,6 +72,22 @@ fun Application.module(testing: Boolean = false) {
         serialization()
     }
     install(Locations)
+    install(CallId) {
+        retrieve { call: ApplicationCall ->
+            call.request.header(HttpHeaders.XRequestId)
+        }
+
+        val counter = atomic(0)
+        generate { "generated-call-id-${counter.getAndIncrement()}" }
+
+        // Once a callId is generated, this optional function is called to verify if the retrieved or generated callId String is valid.
+        verify { callId: String ->
+            callId.isNotEmpty()
+        }
+    }
+
+    install(Compression)
+    install(ConditionalHeaders)
 
     val esClient = provideEsClient(provideAwsInterceptor())
     val json = provideJson()
@@ -71,7 +96,7 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         home()
-        search()
+        search(searchUseCase)
         dummySearch2(searchUseCase)
     }
 }

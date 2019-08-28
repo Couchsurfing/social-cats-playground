@@ -6,6 +6,6 @@ import retrofit2.http.Header
 import retrofit2.http.Query
 
 actual interface SearchService {
-    @GET("search2")
-    actual suspend fun searchUsers(@Header("Authorization") authToken: String?, @Query("input") query: String?): SearchUsersResult
+    @GET("v1/search")
+    actual suspend fun searchUsers(@Header("Authorization") authToken: String, @Query("input") query: String?): SearchUsersResult
 }

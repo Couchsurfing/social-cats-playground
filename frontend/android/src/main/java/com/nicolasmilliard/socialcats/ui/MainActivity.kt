@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        ////////////////
         auth = Auth(FirebaseAuth.getInstance())
         db = Firebase.firestore
 
@@ -59,6 +59,8 @@ class MainActivity : AppCompatActivity() {
             .build()
         val searchService = SocialCatsApiModule.searchService(client)
         val searchLoader = SearchLoader(searchService)
+        ////////////////
+
         presentation = lastNonConfigurationInstance as Presentation?
             ?: SearchPresenter(auth, searchLoader).startPresentation(Dispatchers.Main)
 
