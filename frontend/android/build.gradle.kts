@@ -140,7 +140,7 @@ dependencies {
 
     implementation(Config.Libs.PlayServices.ossLicenses)
 
-    implementation(Config.Libs.Dagger.core)
+    implementation(Config.Libs.Dagger.runtime)
     implementation(Config.Libs.Dagger.android)
     kapt(Config.Libs.Dagger.compiler)
     kapt(Config.Libs.Dagger.androidProcessor)

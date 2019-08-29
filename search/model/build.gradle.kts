@@ -21,13 +21,13 @@ kotlin {
                 implementation(Config.Libs.Kotlin.Serialization.common)
             }
         }
-        jvm().compilations["main"].defaultSourceSet {
+        val jvmMain by getting {
             dependencies {
                 api(Config.Libs.Kotlin.jdk8)
                 implementation(Config.Libs.Kotlin.Serialization.jdk)
             }
         }
-        js().compilations["main"].defaultSourceSet {
+        val jsMain by getting {
             dependencies {
                 api(Config.Libs.Kotlin.js)
                 api(Config.Libs.Kotlin.Serialization.js)

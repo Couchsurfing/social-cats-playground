@@ -1,8 +1,10 @@
+import org.gradle.api.internal.artifacts.dependencies.DefaultExternalModuleDependency
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("multiplatform")
     id("kotlinx-serialization")
+    id("kotlin-kapt")
 }
 
 tasks.withType<KotlinCompile> {
@@ -10,7 +12,9 @@ tasks.withType<KotlinCompile> {
 }
 
 kotlin {
-    jvm()
+    jvm{
+        withJava()
+    }
     js().compilations["main"].kotlinOptions {
         moduleKind = "umd"
     }
@@ -32,6 +36,8 @@ kotlin {
                 implementation(Config.Libs.Retrofit.converterKotlinxSerialization)
                 api(Config.Libs.OkHttp.client)
                 api(Config.Libs.okIo)
+                implementation(Config.Libs.Dagger.runtime)
+                configurations["kapt"].dependencies.add(DefaultExternalModuleDependency("com.google.dagger", "dagger-compiler", "2.24"))
             }
         }
 

@@ -155,9 +155,9 @@ object Config {
             private const val version = "2.24"
             private const val assistedInjectVersion = "0.5.0"
 
-            const val core = "com.google.dagger:dagger:$version"
+            const val runtime = "com.google.dagger:dagger:$version"
             const val compiler = "com.google.dagger:dagger-compiler:$version"
-            const val android = "com.google.dagger:dagger-android-support:$version"
+            const val android = "com.google.dagger:dagger-android:$version"
             const val androidProcessor = "com.google.dagger:dagger-android-processor:$version"
 
             const val assistedInject =
