@@ -13,7 +13,7 @@ dependencies {
     implementation(project(":themes"))
     implementation(project(":profile:ui-android"))
 
-    implementation(Config.Libs.Kotlin.jdk8)
+//    implementation(Config.Libs.Kotlin.jdk8)
     implementation(Config.Libs.Kotlin.Coroutine.android)
 
     implementation(Config.Libs.AndroidX.fragmentKtx)

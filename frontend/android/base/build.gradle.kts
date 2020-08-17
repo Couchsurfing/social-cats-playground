@@ -20,7 +20,7 @@ dependencies {
     implementation(project(":main-presenter"))
     implementation(project(":themes"))
 
-    api(Config.Libs.Kotlin.jdk8)
+
     api(Config.Libs.Kotlin.Coroutine.android)
 
     implementation(Config.Libs.Play.core)

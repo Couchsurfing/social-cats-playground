@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
-    id("kotlinx-serialization")
+    kotlin("plugin.serialization")
 }
 
 java {
@@ -16,7 +16,6 @@ tasks.withType<KotlinCompile> {
 
 dependencies {
     api(project(":store:admin"))
-    api(Config.Libs.Kotlin.Serialization.jdk)
-    api(Config.Libs.Kotlin.jdk8)
+    api(Config.Libs.Kotlin.Serialization.core)
     api(Config.Libs.KotlinLogging.jdk)
 }

@@ -17,8 +17,8 @@ dependencies {
     evaluationDependsOn(":store:admin")
     api(project(":store:admin"))
     api(project(":payment:model"))
-    api(Config.Libs.Kotlin.jdk8)
-    api(Config.Libs.Kotlin.Coroutine.jdk8)
+
+
     api(Config.Libs.KotlinLogging.jdk)
     implementation(Config.Libs.Stripe.java)
 }

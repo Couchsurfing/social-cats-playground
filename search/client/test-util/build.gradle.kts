@@ -20,21 +20,21 @@ kotlin {
             dependencies {
                 api(project(":api:social-cats"))
                 api(project(":search:client"))
-                api(Config.Libs.Kotlin.common)
-                api(Config.Libs.Kotlin.Coroutine.common)
+                
+                api(Config.Libs.Kotlin.Coroutine.core)
             }
         }
         val jvmMain by getting {
             dependencies {
-                api(Config.Libs.Kotlin.jdk8)
-                api(Config.Libs.Kotlin.Coroutine.jdk8)
+
+                
             }
         }
 
         val jsMain by getting {
             dependencies {
-                api(Config.Libs.Kotlin.js)
-                api(Config.Libs.Kotlin.Coroutine.js)
+                
+                
             }
         }
     }

@@ -1,6 +1,6 @@
 plugins {
     kotlin("multiplatform")
-    id("kotlinx-serialization")
+    kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -24,27 +24,17 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(Config.Libs.Kotlin.common)
-                api(Config.Libs.Kotlin.Coroutine.common)
-                implementation(Config.Libs.Kotlin.Serialization.common)
+                api(Config.Libs.Kotlin.Coroutine.core)
+                implementation(Config.Libs.Kotlin.Serialization.core)
             }
         }
         val jvmMain by getting {
             dependencies {
-                api(Config.Libs.Kotlin.jdk8)
-                api(Config.Libs.Kotlin.Coroutine.jdk8)
-                implementation(Config.Libs.Kotlin.Serialization.jdk)
                 api(Config.Libs.Retrofit.client)
                 api(Config.Libs.OkHttp.client)
-                implementation(Config.Libs.Retrofit.converterKotlinxSerialization)
-            }
-        }
-
-        val jsMain by getting {
-            dependencies {
-                api(Config.Libs.Kotlin.js)
-                api(Config.Libs.Kotlin.Coroutine.js)
-                api(Config.Libs.Kotlin.Serialization.js)
+                api(Config.Libs.Retrofit.converterKotlinxSerialization) {
+                    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-serialization-runtime")
+                }
             }
         }
     }

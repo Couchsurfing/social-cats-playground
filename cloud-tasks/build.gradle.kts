@@ -14,9 +14,6 @@ tasks.withType<KotlinCompile> {
 }
 
 dependencies {
-
-    api(Config.Libs.Kotlin.jdk8)
-    api(Config.Libs.Kotlin.Coroutine.jdk8)
     api(Config.Libs.KotlinLogging.jdk)
     implementation(Config.Libs.GoogleCloud.tasks)
 }

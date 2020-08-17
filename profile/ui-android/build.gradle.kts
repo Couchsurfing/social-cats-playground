@@ -11,7 +11,7 @@ dependencies {
     implementation(project(":presentation:binder"))
     implementation(project(":themes"))
 
-    implementation(Config.Libs.Kotlin.jdk8)
+//    implementation(Config.Libs.Kotlin.jdk8)
     implementation(Config.Libs.Kotlin.Coroutine.android)
 
     implementation(Config.Libs.AndroidX.fragmentKtx)

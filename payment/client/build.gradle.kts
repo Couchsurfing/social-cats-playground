@@ -13,35 +13,31 @@ kotlin {
             dependencies {
                 implementation(project(":api:social-cats"))
                 api(project(":payment:model"))
-                api(Config.Libs.Kotlin.common)
-                api(Config.Libs.Kotlin.Coroutine.common)
+                
+                api(Config.Libs.Kotlin.Coroutine.core)
                 implementation(Config.Libs.KotlinLogging.common)
                 api(project(":kotlin-util"))
             }
         }
+
+        commonTest {
+            dependencies {
+                implementation(project(":test-util"))
+                implementation(Config.Libs.Kotlin.test)
+            }
+        }
+
         val androidMain by getting {
             dependencies {
-                implementation(Config.Libs.Retrofit.client)
-                implementation(Config.Libs.Retrofit.converterKotlinxSerialization)
                 implementation(Config.Libs.Play.billing)
-                api(Config.Libs.OkHttp.client)
-                api(Config.Libs.Kotlin.jdk8)
-                api(Config.Libs.Kotlin.Coroutine.jdk8)
                 api(Config.Libs.KotlinLogging.jdk)
                 api(Config.Libs.Stripe.android)
             }
         }
 
-        val androidTest by getting {
-            dependencies {
-                implementation(Config.Libs.Kotlin.Test.jdk)
-                implementation(Config.Libs.Kotlin.Coroutine.test)
-            }
-        }
 //        js().compilations["main"].defaultSourceSet {
 //            dependencies {
-//                api(Config.Libs.Kotlin.js)
-//                api(Config.Libs.Kotlin.Coroutine.js)
+//
 //                api(Config.Libs.KotlinLogging.js)
 //            }
 //        }

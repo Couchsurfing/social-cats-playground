@@ -20,14 +20,14 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(Config.Libs.Kotlin.common)
-                api(Config.Libs.Kotlin.Coroutine.common)
+                
+                api(Config.Libs.Kotlin.Coroutine.core)
             }
         }
         jvm().compilations["main"].defaultSourceSet {
             dependencies {
-                api(Config.Libs.Kotlin.jdk8)
-                api(Config.Libs.Kotlin.Coroutine.jdk8)
+
+                
             }
         }
 
@@ -39,8 +39,8 @@ kotlin {
         }
         js().compilations["main"].defaultSourceSet {
             dependencies {
-                api(Config.Libs.Kotlin.js)
-                api(Config.Libs.Kotlin.Coroutine.js)
+
+                
             }
         }
     }

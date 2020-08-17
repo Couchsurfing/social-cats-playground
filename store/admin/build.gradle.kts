@@ -14,8 +14,8 @@ tasks.withType<KotlinCompile> {
 }
 dependencies {
     api(project(":store:common"))
-    api(Config.Libs.Kotlin.jdk8)
-    api(Config.Libs.Kotlin.Coroutine.jdk8)
+
+    
     api(Config.Libs.KotlinLogging.jdk)
     api(Config.Libs.Firebase.admin)
 }

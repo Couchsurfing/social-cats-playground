@@ -12,8 +12,8 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":feature-flags"))
-                api(Config.Libs.Kotlin.common)
-                api(Config.Libs.Kotlin.Coroutine.common)
+                
+                api(Config.Libs.Kotlin.Coroutine.core)
                 implementation(Config.Libs.KotlinLogging.common)
             }
         }
@@ -21,8 +21,8 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 api(project(":themes"))
-                api(Config.Libs.Kotlin.jdk8)
-                api(Config.Libs.Kotlin.Coroutine.jdk8)
+
+                
                 api(Config.Libs.KotlinLogging.jdk)
                 implementation(Config.Libs.Firebase.remoteConfig)
                 implementation(Config.Libs.material)
@@ -33,8 +33,8 @@ kotlin {
 
         val jsMain by getting {
             dependencies {
-                api(Config.Libs.Kotlin.js)
-                api(Config.Libs.Kotlin.Coroutine.js)
+                
+                
                 api(Config.Libs.KotlinLogging.js)
             }
         }

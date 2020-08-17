@@ -20,6 +20,6 @@ dependencies {
     api(project(":search:model"))
     evaluationDependsOn(":search:admin:repository")
     api(project(":search:admin:repository"))
-    api(Config.Libs.Kotlin.jdk8)
+
     api(Config.Libs.KotlinLogging.jdk)
 }

@@ -101,35 +101,21 @@ object Config {
 
         object Kotlin {
 
-            const val common = "org.jetbrains.kotlin:kotlin-stdlib-common:${kotlinVersion}"
-            const val jdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}"
-            const val js = "org.jetbrains.kotlin:kotlin-stdlib-js:${kotlinVersion}"
-
-            object Test {
-                const val common = "org.jetbrains.kotlin:kotlin-test-common:${kotlinVersion}"
-                const val annotations = "org.jetbrains.kotlin:kotlin-test-annotations-common:${kotlinVersion}"
-                const val jdk = "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion}"
-                const val js = "org.jetbrains.kotlin:kotlin-test-js:${kotlinVersion}"
-            }
+            const val test = "org.jetbrains.kotlin:kotlin-test-multiplatform"
 
             object Coroutine {
-                private const val version = "1.3.8"
+                private const val version = "1.3.9"
 
-                const val common = "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$version"
-                const val jdk8 = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$version"
+                const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
                 const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
-                const val js = "org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$version"
                 const val playServices = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$version"
-                const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
             }
 
             object Serialization {
-                private const val version = "0.20.0"
+                private const val version = "1.0.0-rc"
 
-                const val common =
-                    "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${version}"
-                const val jdk = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${version}"
-                const val js = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${version}"
+                const val core =
+                    "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
             }
         }
 
@@ -267,7 +253,7 @@ object Config {
 
         const val byteUnits = "com.jakewharton.byteunits:byteunits:0.9.1"
 
-        const val turbine = "app.cash.turbine:turbine:0.1.1"
+        const val turbine = "app.cash.turbine:turbine:0.2.0"
 
         object Moshi {
             private const val version = "1.9.3"
@@ -292,8 +278,8 @@ object Config {
         }
 
         object Stripe {
-            const val java = "com.stripe:stripe-java:19.40.0"
-            const val android = "com.stripe:stripe-android:15.0.2"
+            const val java = "com.stripe:stripe-java:19.42.0"
+            const val android = "com.stripe:stripe-android:15.1.0"
         }
 
         object GoogleCloud {

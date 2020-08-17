@@ -30,7 +30,7 @@ dependencies {
     implementation(project(":payment:admin"))
     implementation(project(":store:common"))
 
-    implementation(Config.Libs.Kotlin.jdk8)
+//    implementation(Config.Libs.Kotlin.jdk8)
     implementation(Config.Libs.Firebase.admin)
 
     implementation(Config.Libs.KotlinLogging.jdk)

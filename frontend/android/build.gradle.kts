@@ -94,7 +94,7 @@ dependencies {
     testImplementation(Config.Libs.Test.androidxtruth)
     testImplementation(Config.Libs.Test.espressoCore)
     testImplementation(Config.Libs.Test.robolectric)
-    testImplementation(Config.Libs.Kotlin.Coroutine.test)
+//    testImplementation(Config.Libs.Kotlin.Coroutine.test)
     testImplementation(Config.Libs.AndroidX.pagingCommon)
     testImplementation(Config.Libs.AndroidX.fragmentTesting)
     testImplementation(Config.Libs.AndroidX.workTesting)

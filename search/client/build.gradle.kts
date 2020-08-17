@@ -18,23 +18,17 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(project(":api:social-cats"))
+                api(project(":api:social-cats"))
                 api(project(":search:model"))
                 api(project(":kotlin-util"))
-                api(Config.Libs.Kotlin.common)
-                api(Config.Libs.Kotlin.Coroutine.common)
+                
+                api(Config.Libs.Kotlin.Coroutine.core)
                 implementation(Config.Libs.KotlinLogging.common)
             }
         }
         jvm().compilations["main"].defaultSourceSet {
             dependencies {
-                api(Config.Libs.Kotlin.jdk8)
-                api(Config.Libs.Kotlin.Coroutine.jdk8)
                 api(Config.Libs.KotlinLogging.jdk)
-                implementation(Config.Libs.Kotlin.Serialization.jdk)
-                implementation(Config.Libs.Retrofit.client)
-                implementation(Config.Libs.Retrofit.converterKotlinxSerialization)
-                api(Config.Libs.OkHttp.client)
             }
         }
 
@@ -52,8 +46,6 @@ kotlin {
         }
         js().compilations["main"].defaultSourceSet {
             dependencies {
-                api(Config.Libs.Kotlin.js)
-                api(Config.Libs.Kotlin.Coroutine.js)
                 api(Config.Libs.KotlinLogging.js)
             }
         }

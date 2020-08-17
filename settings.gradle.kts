@@ -74,7 +74,6 @@ pluginManagement {
                 "com.google.android.gms.oss-licenses-plugin" ->
                     useModule("com.google.android.gms:oss-licenses-plugin:0.10.2")
                 "com.google.cloud.tools.appengine" -> useModule("com.google.cloud.tools:appengine-gradle-plugin:2.3.0")
-                "kotlinx-serialization" -> useModule("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
             }
         }
     }
@@ -83,7 +82,7 @@ pluginManagement {
         id("org.jetbrains.kotlin.js") version "$kotlinVersion"
         id("org.jetbrains.kotlin.kapt") version "$kotlinVersion"
         id("org.jetbrains.kotlin.multiplatform") version "$kotlinVersion"
-        id("org.jetbrains.kotlin.kotlinx-serialization") version "$kotlinVersion"
+        id("org.jetbrains.kotlin.plugin.serialization") version "$kotlinVersion"
         id("com.github.johnrengelman.shadow") version "6.0.0"
         id("com.github.ben-manes.versions") version "0.29.0"
         id("org.jlleitschuh.gradle.ktlint") version "9.3.0"

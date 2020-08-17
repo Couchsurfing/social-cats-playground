@@ -14,7 +14,7 @@ tasks.withType<KotlinCompile> {
 }
 
 dependencies {
-    api(Config.Libs.Kotlin.jdk8)
+
     api(Config.Libs.KotlinLogging.jdk)
     api(platform(Config.Libs.Aws.sdkBom))
     api(Config.Libs.Aws.apacheClient)
