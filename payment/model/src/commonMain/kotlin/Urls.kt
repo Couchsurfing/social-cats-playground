@@ -1,8 +1,8 @@
 package com.nicolasmilliard.socialcats.payment
 
-const val URL_DOMAIN = "https://social-cats-payment.web.app"
+const val BASE_URL = "https://social-cats-payment.web.app/membership/subscription"
 
-class Urls(private val domain: String = URL_DOMAIN) {
+class Urls(private val domain: String = BASE_URL) {
 
     val paymentCancel = "$domain/cancel"
 

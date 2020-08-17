@@ -17,6 +17,13 @@
         android:id="@+id/newSubscriptionFragment"
         android:name="com.nicolasmilliard.socialcats.payment.ui.checkout.NewSubscriptionFragment"
         android:label="NewSubscriptionFragment">
-
+        <deepLink
+            android:id="@+id/deepLinkSuccess"
+            android:autoVerify="true"
+            app:uri="https://social-cats-payment.web.app/membership/subscription/success" />
+        <deepLink
+            android:id="@+id/deepLinkCancel"
+            android:autoVerify="true"
+            app:uri="https://social-cats-payment.web.app/membership/subscription/cancel " />
     </fragment>
 </navigation>
