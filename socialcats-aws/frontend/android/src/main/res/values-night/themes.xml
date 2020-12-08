@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Platform.Theme.SocialCatsAws" parent="android:Theme.Material" />
+    <style name="Theme.SocialCatsAws" parent="Base.Theme.SocialCatsAws" />
+</resources>
