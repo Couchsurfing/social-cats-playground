@@ -11,10 +11,12 @@ import software.amazon.awscdk.core.RemovalPolicy
 import software.amazon.awscdk.services.dynamodb.Attribute
 import software.amazon.awscdk.services.dynamodb.AttributeType
 import software.amazon.awscdk.services.dynamodb.BillingMode
+import software.amazon.awscdk.services.dynamodb.GlobalSecondaryIndexProps
+import software.amazon.awscdk.services.dynamodb.ProjectionType
 import software.amazon.awscdk.services.dynamodb.StreamViewType
 import software.amazon.awscdk.services.dynamodb.Table
 import software.amazon.awscdk.services.dynamodb.TableEncryption
-import software.amazon.awscdk.services.lambda.destinations.SqsDestination
+import software.amazon.awscdk.services.events.EventBus
 import software.amazon.awsconstructs.services.dynamodbstreamlambda.DynamoDBStreamToLambda
 import software.amazon.awsconstructs.services.dynamodbstreamlambda.DynamoDBStreamToLambdaProps
 import java.util.Properties
@@ -25,7 +27,8 @@ class UserRepository(
   isProd: Boolean,
   functionsProp: Properties,
   region: String,
-  appName: String
+  appName: String,
+  eventBus: EventBus,
 ) : Construct(scope, id) {
 
   val dynamodbTable: Table
@@ -45,20 +48,31 @@ class UserRepository(
             construct = this,
             asset = functionsProp.getProperty("dynamodb-stream"),
             region = region,
-            handler = "com.nicolasmilliard.socialcatsaws.profile.backend.functions.OnNewImage",
-            description = "Function to handle Dynamo stream",
-            version = "1.0.0-SNAPSHOT",
+            handler = "com.nicolasmilliard.socialcatsaws.profile.backend.functions.OnDynamoStream",
+            description = "Function to fanout Dynamo stream to EventBridge",
+            version = "1.0.4-SNAPSHOT",
             layerId = "DynamoToStreamLayerId",
             env = mapOf(
-              "APP_NAME" to appName
+              "APP_NAME" to appName,
+              "EVENT_BUS_NAME" to eventBus.eventBusName,
+              "MAX_ATTEMPT" to "1",
+              "DLQ_URL" to dlq.queueUrl
             ),
-            onFailure = SqsDestination(dlq)
+          )
+        )
+        .dynamoEventSourceProps(
+          mapOf(
+            "retryAttempts" to 5,
+            "batchSize" to 10
           )
         )
         .build()
     )
+    streamToLambda.lambdaFunction.role?.addManagedPolicy(getLambdaInsightPolicy())
 
-    streamToLambda.lambdaFunction.addToRolePolicy(getLambdaInsightPolicy())
+    dlq.grantSendMessages(streamToLambda.lambdaFunction)
+
+    eventBus.grantPutEventsTo(streamToLambda.lambdaFunction)
   }
 
   private fun createDynamoTable(isProd: Boolean): Table {
@@ -88,6 +102,25 @@ class UserRepository(
       .encryption(TableEncryption.AWS_MANAGED)
       .pointInTimeRecovery(isProd)
       .build()
+
+    table.addGlobalSecondaryIndex(
+      GlobalSecondaryIndexProps.builder()
+        .indexName(Schema.GSI1_INDEX_NAME)
+        .partitionKey(
+          Attribute.builder()
+            .name(Schema.SharedAttributes.SORT_KEY)
+            .type(AttributeType.STRING)
+            .build()
+        )
+        .sortKey(
+          Attribute.builder()
+            .name(Schema.SharedAttributes.PARTITION_KEY)
+            .type(AttributeType.STRING)
+            .build()
+        )
+        .projectionType(ProjectionType.KEYS_ONLY)
+        .build()
+    )
 
     CfnOutput(
       this,

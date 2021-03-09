@@ -16,13 +16,23 @@ public interface UsersRepository {
   public fun insertImage(image: Image): InsertResult
   public fun countImages(userId: String): Int
 
-  public fun insertDevice(device: Device): InsertResult
-  public fun updateNotificationKey(userId: String, notificationKey: String)
+  public fun insertDevice(device: Device)
+  public fun deleteDevices(devices: List<UserDeviceToken>)
 
-  public fun getTokens(userId: String): List<String>
+  public fun getDeviceTokens(userId: String, limit: Int, pageToken: String?): TokensResult
 }
 
 public sealed class InsertResult {
   public object Added : InsertResult()
   public object AlreadyExist : InsertResult()
 }
+
+public data class TokensResult(
+  val tokens: List<String>,
+  val nextPageToken: String?
+)
+
+public data class UserDeviceToken(
+  val userId: String,
+  val token: String
+)

@@ -1,0 +1,52 @@
+{
+  "Records": [
+    {
+      "eventID": "c630f9263f6ee4a0cc53a8d63949b58b",
+      "eventName": "INSERT",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "us-east-1",
+      "dynamodb": {
+        "ApproximateCreationDateTime": 1615265624,
+        "Keys": {
+          "SK": {
+            "S": "USER#7392926e-fc2a-459e-a85c-0f232d91f04b"
+          },
+          "PK": {
+            "S": "USER#7392926e-fc2a-459e-a85c-0f232d91f04b"
+          }
+        },
+        "NewImage": {
+          "EmailVerified": {
+            "BOOL": true
+          },
+          "ImageCount": {
+            "N": "0"
+          },
+          "Email": {
+            "S": "niqo01+test40@gmail.com"
+          },
+          "UserId": {
+            "S": "7392926e-fc2a-459e-a85c-0f232d91f04b"
+          },
+          "CreatedAt": {
+            "S": "2021-03-09T04:53:43.414208Z"
+          },
+          "ItemType": {
+            "S": "USER"
+          },
+          "SK": {
+            "S": "USER#7392926e-fc2a-459e-a85c-0f232d91f04b"
+          },
+          "PK": {
+            "S": "USER#7392926e-fc2a-459e-a85c-0f232d91f04b"
+          }
+        },
+        "SequenceNumber": "14407600000000066678125923",
+        "SizeBytes": 315,
+        "StreamViewType": "NEW_IMAGE"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:us-east-1:690127176154:table/Users/stream/2021-03-06T00:45:26.063"
+    }
+  ]
+}

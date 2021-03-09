@@ -18,7 +18,7 @@ import javax.inject.Inject
 private val MEGABYTE = 1024L * 1024L
 private val logger = KotlinLogging.logger {}
 
-private const val MAX_STORED_IMAGES = 3
+private const val MAX_STORED_IMAGES = 10
 public class UploadImageUseCase @Inject constructor(
   private val usersRepository: UsersRepository,
   private val imageObjectStore: ImageObjectStore,
@@ -38,7 +38,7 @@ public class UploadImageUseCase @Inject constructor(
     return CreateSignedUrl.CreateSignedUrlData(preSignedUrl.url, preSignedUrl.headers)
   }
 
-  public fun onNewStoredImage(storeKey: String, size: Long, eventTime: String): Unit {
+  public fun onNewStoredImage(storeKey: String, size: Long, eventTime: String) {
     val imageStoreKey = ImageStoreKey(storeKey)
     val userId = imageStoreKey.userId
     withLoggingContext("UserId" to userId) {

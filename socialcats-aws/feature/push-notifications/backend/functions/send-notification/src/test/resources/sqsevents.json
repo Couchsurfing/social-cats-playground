@@ -1,0 +1,61 @@
+{
+  "Records": [
+    {
+      "messageId": "messageId1",
+      "receiptHandle": "receiptHandle1",
+      "eventSourceARN": ["eventSourceARN1"],
+      "eventSource": "aws:sqs",
+      "awsRegion": "us-east-1",
+      "body": "{\n\t\t\t\"registrationToken\": \"regTOken\",\n\t\t\t\"userId\": \"userId\",\n\t\t\t\"notification\": {\n\t\t\t\t\"imageUrl\": null,\n\t\t\t\t\"title\": \"Title1\",\n\t\t\t\t\"body\": \"Body1\",\n\t\t\t\t\"analyticsLabel\": \"analyticLabel\"\n\t\t\t}\n\t\t}",
+      "md5OfBody": "us-east-1",
+      "attributes": {
+        "ApproximateReceiveCount": 1,
+        "SentTimestamp": 1616599270743,
+        "SenderId": "SenderId",
+        "ApproximateFirstReceiveTimestamp": 1616599270788
+      },
+      "messageAttributes": {
+
+
+      }
+    },
+    {
+      "messageId": "messageId2",
+      "receiptHandle": "receiptHandle2",
+      "eventSourceARN": ["eventSourceARN1"],
+      "eventSource": "aws:sqs",
+      "awsRegion": "us-east-1",
+      "body": "{\n\t\t\t\"registrationToken\": \"regTOken2\",\n\t\t\t\"userId\": \"userId2\",\n\t\t\t\"notification\": {\n\t\t\t\t\"imageUrl\": null,\n\t\t\t\t\"title\": \"Title1\",\n\t\t\t\t\"body\": \"Body1\",\n\t\t\t\t\"analyticsLabel\": \"analyticLabel\"\n\t\t\t}\n\t\t}",
+      "md5OfBody": "us-east-1",
+      "attributes": {
+        "ApproximateReceiveCount": 1,
+        "SentTimestamp": 1616599270743,
+        "SenderId": "SenderId",
+        "ApproximateFirstReceiveTimestamp": 1616599270788
+      },
+      "messageAttributes": {
+
+
+      }
+    },
+    {
+      "messageId": "messageId3",
+      "receiptHandle": "receiptHandle3",
+      "eventSourceARN": ["eventSourceARN1"],
+      "eventSource": "aws:sqs",
+      "awsRegion": "us-east-1",
+      "body": "{\n\t\t\t\"registrationToken\": \"regTOken3\",\n\t\t\t\"userId\": \"userId3\",\n\t\t\t\"notification\": {\n\t\t\t\t\"imageUrl\": null,\n\t\t\t\t\"title\": \"Title1\",\n\t\t\t\t\"body\": \"Body1\",\n\t\t\t\t\"analyticsLabel\": \"analyticLabel\"\n\t\t\t}\n\t\t}",
+      "md5OfBody": "us-east-1",
+      "attributes": {
+        "ApproximateReceiveCount": 1,
+        "SentTimestamp": 1616599270743,
+        "SenderId": "SenderId",
+        "ApproximateFirstReceiveTimestamp": 1616599270788
+      },
+      "messageAttributes": {
+
+
+      }
+    }
+  ]
+}

@@ -3,6 +3,7 @@ package com.nicolasmilliard.pushnotification
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -12,13 +13,12 @@ public class FcmMessagingService : FirebaseMessagingService() {
   @Inject
   internal lateinit var service: RegTokenService
 
-  override fun onNewToken(token: String) {
+  override fun onNewToken(token: String): Unit = runBlocking {
     Timber.i("FcmMessagingService.onNewToken()")
     service.onNewDeviceIdToken()
   }
 
   override fun onMessageReceived(message: RemoteMessage) {
-    TODO()
   }
 
   override fun onDeletedMessages() {

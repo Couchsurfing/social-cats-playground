@@ -23,11 +23,6 @@ public object UsersRepositoryModule {
   }
 }
 
-@ContributesTo(AppScope::class)
-public interface UsersRepositoryComponent {
-  public fun getUsersRepository(): UsersRepository
-}
-
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 public annotation class DynamoDbTableName

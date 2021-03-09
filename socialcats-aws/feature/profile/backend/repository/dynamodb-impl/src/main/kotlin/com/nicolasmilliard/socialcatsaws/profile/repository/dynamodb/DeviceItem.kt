@@ -94,13 +94,13 @@ internal data class DeviceItem(
   var languageTag: String? = null,
 ) {
   var partition_key
-    get() = UserItem.key(userId)
+    get() = key(token)
     set(_) {
       // Ignore needed by enhanced client
     }
 
   var sort_key
-    get() = "${Schema.DeviceItem.KEY_PREFIX}$instanceId"
+    get() = UserItem.key(userId)
     set(_) {
       // Ignore needed by enhanced client
     }
@@ -110,6 +110,12 @@ internal data class DeviceItem(
     set(_) {
       // Ignore needed by enhanced client
     }
+
+  companion object {
+    fun key(id: String?): String {
+      return "${Schema.DeviceItem.KEY_PREFIX}$id"
+    }
+  }
 }
 
 internal fun DeviceItem.toDevice() =

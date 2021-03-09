@@ -2,7 +2,6 @@ plugins {
   kotlin("jvm")
 }
 
-group = "com.nicolasmilliard.socialcatsaws.imageprocessing.api"
 version = "1.0-SNAPSHOT"
 
 dependencies {

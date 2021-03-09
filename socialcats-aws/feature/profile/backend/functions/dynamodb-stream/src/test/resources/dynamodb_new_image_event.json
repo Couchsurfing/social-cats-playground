@@ -1,0 +1,46 @@
+{
+  "Records": [
+    {
+      "eventID": "b9321b71a3b7dd18d834aef48f70e649",
+      "eventName": "INSERT",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "us-east-1",
+      "dynamodb": {
+        "ApproximateCreationDateTime": 1615847584000,
+        "Keys": {
+          "SK": {
+            "S": "IMAGE#2021-03-15T22:32:50.315Z#u/54ea1ce0-9ed4-4ffa-99be-ea3149767afd/94fe92ec-d37c-4ed0-af56-beff24e20a21"
+          },
+          "PK": {
+            "S": "USER#54ea1ce0-9ed4-4ffa-99be-ea3149767afd"
+          }
+        },
+        "NewImage": {
+          "UserId": {
+            "S": "54ea1ce0-9ed4-4ffa-99be-ea3149767afd"
+          },
+          "CreatedAt": {
+            "S": "2021-03-15T22:32:50.315Z"
+          },
+          "ItemType": {
+            "S": "IMAGE"
+          },
+          "ImageId": {
+            "S": "u/54ea1ce0-9ed4-4ffa-99be-ea3149767afd/94fe92ec-d37c-4ed0-af56-beff24e20a21"
+          },
+          "SK": {
+            "S": "IMAGE#2021-03-15T22:32:50.315Z#u/54ea1ce0-9ed4-4ffa-99be-ea3149767afd/94fe92ec-d37c-4ed0-af56-beff24e20a21"
+          },
+          "PK": {
+            "S": "USER#54ea1ce0-9ed4-4ffa-99be-ea3149767afd"
+          }
+        },
+        "SequenceNumber": "46893600000000028689377135",
+        "SizeBytes": 472,
+        "StreamViewType": "NEW_IMAGE"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:us-east-1:690127176154:table/Users/stream/2021-03-06T00:45:26.063"
+    }
+  ]
+}

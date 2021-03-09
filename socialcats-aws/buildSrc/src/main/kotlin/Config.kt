@@ -16,8 +16,8 @@ object Config {
         }
         const val buildToolsVersion = "30.0.3"
 
-        val sourceCompatibility = JavaVersion.VERSION_1_8
-        val targetCompatibility = JavaVersion.VERSION_1_8
+        val sourceCompatibility = JavaVersion.VERSION_11
+        val targetCompatibility = JavaVersion.VERSION_11
 
         object Versions {
             const val major = 0
@@ -30,6 +30,6 @@ object Config {
             const val code = major * 1000000 + minor * 10000 + patch * 100 + build
         }
 
-        const val composeVersion = "1.0.0-beta01"
+        const val composeVersion = "1.0.0-beta03"
     }
 }

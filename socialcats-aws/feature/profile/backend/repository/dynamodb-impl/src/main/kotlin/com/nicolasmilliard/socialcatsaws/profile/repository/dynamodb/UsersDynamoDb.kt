@@ -8,25 +8,26 @@ import com.nicolasmilliard.socialcatsaws.profile.model.User
 import com.nicolasmilliard.socialcatsaws.profile.model.UserWithImages
 import com.nicolasmilliard.socialcatsaws.profile.repository.DbInvalidEntityException
 import com.nicolasmilliard.socialcatsaws.profile.repository.InsertResult
+import com.nicolasmilliard.socialcatsaws.profile.repository.TokensResult
+import com.nicolasmilliard.socialcatsaws.profile.repository.UserDeviceToken
 import com.nicolasmilliard.socialcatsaws.profile.repository.UsersRepository
+import com.nicolasmilliard.socialcatsaws.profile.repository.dynamodb.pagination.DynamoDbStartKeySerializer
 import mu.KotlinLogging
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
-import software.amazon.awssdk.enhanced.dynamodb.Expression
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
-import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest
 import software.amazon.awssdk.services.dynamodb.model.Put
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse
-import software.amazon.awssdk.services.dynamodb.model.ReturnValue
 import software.amazon.awssdk.services.dynamodb.model.TransactWriteItem
 import software.amazon.awssdk.services.dynamodb.model.TransactWriteItemsRequest
 import software.amazon.awssdk.services.dynamodb.model.TransactionCanceledException
 import software.amazon.awssdk.services.dynamodb.model.Update
-import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest
+import software.amazon.awssdk.services.dynamodb.model.WriteRequest
 import kotlin.time.measureTimedValue
 
 private val logger = KotlinLogging.logger {}
@@ -34,9 +35,9 @@ private val logger = KotlinLogging.logger {}
 public class UsersDynamoDb(
   private val client: DynamoDbClient,
   private val tableName: String,
-  private val cloudMetrics: CloudMetrics
-) :
-  UsersRepository {
+  private val cloudMetrics: CloudMetrics,
+  private val paginationTokenSerializer: TokenSerializer<Map<String, AttributeValue>> = DynamoDbStartKeySerializer()
+) : UsersRepository {
   private val enhancedClient = DynamoDbEnhancedClient.builder()
     .dynamoDbClient(client)
     .build()
@@ -51,6 +52,7 @@ public class UsersDynamoDb(
   private val devicesTable = enhancedClient.table(tableName, devicesTableSchema)
 
   override fun getUserAndImages(userId: String, newestImagesCount: Int): UserWithImages {
+
     logger.debug("getUserAndImages()")
     val userPK: AttributeValue = AttributeValue.builder()
       .s(UserItem.key(userId))
@@ -111,13 +113,13 @@ public class UsersDynamoDb(
   // }
 
   override fun updateUser(user: User): User {
-    logger.debug("updateUser()")
+    logger.debug { "updateUser()" }
     val updateItem = usersTable.updateItem(user.toUserItem())
     return updateItem.toUser()
   }
 
   override fun getUserById(id: String): User {
-    logger.debug("getUserById()")
+    logger.debug { "getUserById()" }
     val pk = UserItem.key(id)
     val key: Key = Key.builder().partitionValue(pk)
       .sortValue(pk).build()
@@ -125,7 +127,7 @@ public class UsersDynamoDb(
   }
 
   override fun insertImage(image: Image): InsertResult {
-    logger.debug("insertImage()")
+    logger.debug { "insertImage()" }
     val timeValue = measureTimedValue {
       val imageItem = imagesTableSchema.itemToMap(image.toImageItem(), false)
       val imagePut = Put.builder()
@@ -192,7 +194,7 @@ public class UsersDynamoDb(
   }
 
   override fun countImages(userId: String): Int {
-    logger.debug("countImages(): $userId")
+    logger.debug { "countImages(): $userId" }
 
     val userPk = UserItem.key(userId)
     val result = client.getItem(
@@ -210,91 +212,130 @@ public class UsersDynamoDb(
         .projectionExpression(Schema.UserItem.Attributes.IMAGE_COUNT)
         .build()
     )
-    logger.debug("countImages() ${result.item()}")
-    logger.debug("countImages() ${result.item().keys}")
-    return result.item().getValue(Schema.UserItem.Attributes.IMAGE_COUNT).n().toInt()
+    logger.debug { "countImages() ${result.item()}" }
+    logger.debug { "countImages() ${result.item().keys}" }
+    return result.item()[Schema.UserItem.Attributes.IMAGE_COUNT]?.n()?.toInt() ?: 0
   }
 
-  override fun insertDevice(device: Device): InsertResult {
-    logger.debug("insertDevice()")
-    try {
-      devicesTable.putItem(
-        PutItemEnhancedRequest.builder(DeviceItem::class.java)
-          .item(device.toDeviceItem())
-          .conditionExpression(
-            Expression.builder()
-              .expression("attribute_not_exists(#pk) and attribute_not_exists(#sk) and attribute_not_exists(#instanceId)")
-              .expressionNames(mapOf(
-                "#pk" to Schema.SharedAttributes.PARTITION_KEY,
-                "#sk" to Schema.SharedAttributes.SORT_KEY,
-                "#instanceId" to Schema.DeviceItem.Attributes.INSTANCE_ID
-              ))
-              .build()
+  override fun insertDevice(device: Device) {
+    logger.debug { "insertDevice()" }
+    val deviceItem = device.toDeviceItem()
+
+    val devicePK: AttributeValue = AttributeValue.builder()
+      .s(deviceItem.partition_key)
+      .build()
+    val userSK: AttributeValue = AttributeValue.builder()
+      .s(Schema.UserItem.KEY_PREFIX)
+      .build()
+
+    val query = client.query(
+      QueryRequest.builder()
+        .tableName(tableName)
+        .keyConditionExpression("#pk = :pk and begins_with(#sk, :sk)")
+        .expressionAttributeNames(
+          mapOf(
+            "#pk" to Schema.SharedAttributes.PARTITION_KEY,
+            "#sk" to Schema.SharedAttributes.SORT_KEY,
           )
-          .build()
-      )
-      return InsertResult.Added
-    } catch (e: ConditionalCheckFailedException) {
-      return InsertResult.AlreadyExist
-    }
+        )
+        .expressionAttributeValues(
+          mapOf(
+            ":pk" to devicePK,
+            ":sk" to userSK
+          )
+        )
+        .projectionExpression("${Schema.SharedAttributes.PARTITION_KEY}, ${Schema.SharedAttributes.SORT_KEY}")
+        .scanIndexForward(true)
+        .limit(3)
+        .build()
+    )
+
+    query.items().asSequence()
+      .filterNot { device.userId == it.getValue(Schema.SharedAttributes.PARTITION_KEY).s() }
+      .forEach {
+        val pkAttribute = it.getValue(Schema.SharedAttributes.PARTITION_KEY)
+        val skAttribute = it.getValue(Schema.SharedAttributes.SORT_KEY)
+        logger.debug { "insertDevice Deleting existing device token: PK:${pkAttribute.s()}, SK:${skAttribute.s()}" }
+        client.deleteItem(
+          DeleteItemRequest.builder()
+            .tableName(tableName)
+            .key(
+              mapOf(
+                Schema.SharedAttributes.PARTITION_KEY to pkAttribute,
+                Schema.SharedAttributes.SORT_KEY to skAttribute
+              )
+            )
+            .build()
+        )
+      }
+
+    devicesTable.putItem(
+      PutItemEnhancedRequest.builder(DeviceItem::class.java)
+        .item(device.toDeviceItem())
+        .build()
+    )
   }
 
-  override fun updateNotificationKey(userId: String, notificationKey: String) {
-    val userKey = UserItem.key(userId)
-    try {
-      client.updateItem(
-        UpdateItemRequest.builder()
-          .tableName(tableName)
-          .key(
+  override fun deleteDevices(devices: List<UserDeviceToken>) {
+    val requests = devices.map { deviceToken ->
+      WriteRequest.builder()
+        .deleteRequest {
+          it.key(
             mapOf(
               Schema.SharedAttributes.PARTITION_KEY to AttributeValue.builder()
-                .s(userKey)
-                .build(),
+                .s(deviceToken.token).build(),
               Schema.SharedAttributes.SORT_KEY to AttributeValue.builder()
-                .s(userKey)
-                .build()
+                .s(DeviceItem.key(deviceToken.userId)).build()
             )
           )
-          .updateExpression("SET ${Schema.UserItem.Attributes.NOTIFICATION_KEY} = :value")
-          .expressionAttributeValues(
-            mapOf(
-              ":value" to AttributeValue.builder().s(notificationKey).build()
-            )
-          )
-          .conditionExpression("attribute_exists(${Schema.SharedAttributes.PARTITION_KEY}) and attribute_exists(${Schema.SharedAttributes.SORT_KEY})")
-          .returnValues(ReturnValue.NONE)
-          .build()
-      )
-    } catch (e: ConditionalCheckFailedException) {
-      throw DbInvalidEntityException("No user found with id: $userId", e)
+        }
+        .build()
     }
+    client.batchWriteItem { it.requestItems(mapOf(tableName to requests)) }
   }
 
-  override fun getTokens(userId: String): List<String> {
-    // val userPK: AttributeValue = AttributeValue.builder()
-    //   .s(UserItem.key(userId))
-    //   .build()
-    // val deviceSK: AttributeValue = AttributeValue.builder()
-    //   .s(Schema.DeviceItem.KEY_PREFIX)
-    //   .build()
-    // client.query(QueryRequest.builder()
-    //   .tableName(tableName)
-    //   .keyConditionExpression("#pk = :pk and begins_with(#sk, :sk)")
-    //   .expressionAttributeNames(
-    //     mapOf(
-    //       "#pk" to Schema.SharedAttributes.PARTITION_KEY,
-    //       "#sk" to Schema.SharedAttributes.SORT_KEY,
-    //     )
-    //   )
-    //   .expressionAttributeValues(
-    //     mapOf(
-    //       ":pk" to userPK,
-    //       ":sk" to deviceSK,
-    //     )
-    //   )
-    //   .scanIndexForward(true)
-    //   .limit(50)
-    //   .build())
-    throw NotImplementedError()
+  override fun getDeviceTokens(userId: String, limit: Int, pageToken: String?): TokensResult {
+
+    val userPK: AttributeValue = AttributeValue.builder()
+      .s(UserItem.key(userId))
+      .build()
+    val deviceSK: AttributeValue = AttributeValue.builder()
+      .s(Schema.DeviceItem.KEY_PREFIX)
+      .build()
+
+    val builder = QueryRequest.builder()
+      .tableName(Schema.TABLE_NAME)
+      .indexName(Schema.GSI1_INDEX_NAME)
+      .keyConditionExpression("#sk = :sk and begins_with(#pk, :pk)")
+      .expressionAttributeNames(
+        mapOf(
+          "#sk" to Schema.SharedAttributes.SORT_KEY,
+          "#pk" to Schema.SharedAttributes.PARTITION_KEY,
+        )
+      )
+      .expressionAttributeValues(
+        mapOf(
+          ":sk" to userPK,
+          ":pk" to deviceSK,
+        )
+      )
+      .scanIndexForward(true)
+      .limit(limit)
+    if (pageToken != null) {
+      builder.exclusiveStartKey(paginationTokenSerializer.deserialize(pageToken))
+    }
+
+    val response = client.query(builder.build())
+    val tokens =
+      response.items().asSequence().map {
+        it.getValue(Schema.SharedAttributes.PARTITION_KEY).s().substringAfterLast("#")
+      }
+        .toList()
+    val nextPageToken: String? = if (response.hasLastEvaluatedKey()) {
+      paginationTokenSerializer.serialize(response.lastEvaluatedKey())
+    } else {
+      null
+    }
+    return TokensResult(tokens, nextPageToken)
   }
 }

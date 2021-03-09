@@ -16,7 +16,7 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        api("org.jetbrains.kotlinx:kotlinx-serialization-json:_")
+        api("org.jetbrains.kotlinx:kotlinx-serialization-core:_")
       }
     }
   }

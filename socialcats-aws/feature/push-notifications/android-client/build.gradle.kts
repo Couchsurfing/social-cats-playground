@@ -26,5 +26,10 @@ dependencies {
   implementation("com.google.firebase:firebase-messaging")
   implementation("com.squareup.retrofit2:retrofit:_")
   implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:_")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:_")
   api("com.squareup.okhttp3:okhttp:_")
+}
+
+kapt {
+  correctErrorTypes = true
 }

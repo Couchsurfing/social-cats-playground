@@ -58,7 +58,7 @@ class ImagingService(
       .build()
 
     createUploadUrlFunction = lambdaS3.lambdaFunction
-    createUploadUrlFunction.addToRolePolicy(getLambdaInsightPolicy())
+    createUploadUrlFunction.role?.addManagedPolicy(getLambdaInsightPolicy())
 
     table.grantReadData(createUploadUrlFunction)
 

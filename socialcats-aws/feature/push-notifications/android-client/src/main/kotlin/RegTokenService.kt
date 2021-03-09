@@ -53,7 +53,7 @@ public class RegTokenService internal constructor(
     }
   }
 
-  public fun onNewDeviceIdToken() {
+  public suspend fun onNewDeviceIdToken() {
     val signInState = auth.getSignInState()
     if (signInState != null) {
       scheduleSendToken(signInState.userId, true)
@@ -91,13 +91,14 @@ public class RegTokenService internal constructor(
     }
 
     try {
-      val lastSavedToken = store.getString("LAST_SAVED_REGISTRATION_TOKEN").first()
+      val storeKey = "LAST_SAVED_TOKEN#$userId"
+      val lastSavedToken = store.getString(storeKey).first()
 
       val token = firebaseMessaging.token.await()
       if (token != lastSavedToken) {
         val instanceId = firebaseInstallations.id.await()
         sendToken(signedInState.accessToken, instanceId, token)
-        store.writeString("LAST_SAVED_REGISTRATION_TOKEN", token)
+        store.writeString(storeKey, token)
       } else {
         Timber.w("SendRegTokenService Registration token is already up to date")
       }

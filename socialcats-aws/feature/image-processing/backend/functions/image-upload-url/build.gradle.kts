@@ -8,7 +8,6 @@ plugins {
   id("com.squareup.anvil")
 }
 
-group = "com.nicolasmilliard.socialcatsaws.imageprocessing.backend.functions"
 version = "1.0-SNAPSHOT"
 
 tasks.withType<ShadowJar> {

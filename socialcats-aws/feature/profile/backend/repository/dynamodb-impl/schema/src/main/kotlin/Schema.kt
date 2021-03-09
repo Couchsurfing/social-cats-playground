@@ -2,6 +2,7 @@ package com.nicolasmilliard.socialcatsaws.profile.repository.dynamodb
 
 public object Schema {
   public const val TABLE_NAME: String = "Users"
+  public const val GSI1_INDEX_NAME: String = "Gsi1Index"
 
   public object SharedAttributes {
     public const val PARTITION_KEY: String = "PK"
@@ -22,7 +23,6 @@ public object Schema {
       public const val NAME: String = "Name"
       public const val IMAGE_COUNT: String = "ImageCount"
       public const val AVATAR_IMAGE_ID: String = "AvatarImageId"
-      public const val NOTIFICATION_KEY: String = "NotificationKey"
     }
   }
 
@@ -30,7 +30,7 @@ public object Schema {
     public const val TYPE: String = "IMAGE"
     public const val KEY_PREFIX: String = "$TYPE#"
     public object Attributes {
-      public const val MESSAGE_ID: String = "MessageId"
+      public const val IMAGE_ID: String = "ImageId"
       public const val USER_ID: String = "UserId"
       public const val CREATED_AT: String = "CreatedAt"
     }

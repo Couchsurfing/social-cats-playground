@@ -1,0 +1,26 @@
+{
+  "Records": [
+    {
+      "eventID": "1692f9ead4c89de81fbd191458ed91fc",
+      "eventName": "REMOVE",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "us-east-1",
+      "dynamodb": {
+        "ApproximateCreationDateTime": 1615265624,
+        "Keys": {
+          "SK": {
+            "S": "USER#7392926e-fc2a-459e-a85c-0f232d91f04b"
+          },
+          "PK": {
+            "S": "USER#7392926e-fc2a-459e-a85c-0f232d91f04b"
+          }
+        },
+        "SequenceNumber": "62374100000000081908286328",
+        "SizeBytes": 215,
+        "StreamViewType": "NEW_IMAGE"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:us-east-1:690127176154:table/Users/stream/2021-03-06T00:45:26.063"
+    }
+  ]
+}

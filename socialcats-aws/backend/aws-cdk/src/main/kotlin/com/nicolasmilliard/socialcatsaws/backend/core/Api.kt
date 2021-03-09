@@ -60,6 +60,7 @@ class Api constructor(
         .removalPolicy(removalPolicy)
         .build()
     )
+
     // HttpStage.Builder.create(this, "DefaultStage")
     //     .stageName("\$default")
     //     .httpApi(api)
@@ -75,7 +76,7 @@ class Api constructor(
           .destinationArn(logGroup.logGroupArn)
           .format(
             """
-                        { "requestId":"#context.requestId", "ip": "\#context.identity.sourceIp", "requestTime":"#context.requestTime", "httpMethod":"#context.httpMethod","routeKey":"#context.routeKey", "status":"#context.status","protocol":"#context.protocol", "responseLength":"#context.responseLength" }
+            { "requestId":"#context.requestId", "ip": "\#context.identity.sourceIp", "requestTime":"#context.requestTime", "httpMethod":"#context.httpMethod","routeKey":"#context.routeKey", "status":"#context.status","protocol":"#context.protocol", "responseLength":"#context.responseLength" }
             """.trimIndent().replace('#', '$')
           )
           .build()

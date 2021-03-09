@@ -18,11 +18,6 @@ public object ObjectStoreModule {
   }
 }
 
-@ContributesTo(AppScope::class)
-public interface ObjectStoreComponent {
-  public fun getObjectStore(): ObjectStore
-}
-
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 public annotation class S3BucketName

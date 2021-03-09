@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.runningReduce
 
@@ -31,15 +32,15 @@ public class Auth(private val provider: AuthProvider) {
 
   public data class SignedInEvent(val signedInState: AuthState.SignedIn)
 
-  public fun getSignInState(): AuthState.SignedIn? {
-    val state = provider.authStates.value
+  public suspend fun getSignInState(): AuthState.SignedIn? {
+    val state = provider.authStates.filterNot { it is AuthState.Initializing }.first()
     if (state is AuthState.SignedIn) {
       return state
     }
     return null
   }
 
-  public fun getSignInStateForUser(userId: String): AuthState.SignedIn? {
+  public suspend fun getSignInStateForUser(userId: String): AuthState.SignedIn? {
     val state = getSignInState()
     if (state != null && state.userId == userId) {
       return state

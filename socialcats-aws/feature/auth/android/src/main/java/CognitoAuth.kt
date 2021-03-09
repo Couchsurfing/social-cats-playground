@@ -3,7 +3,6 @@ package com.nicolasmilliard.socialcatsaws.auth
 import android.app.Activity
 import android.content.Intent
 import com.amplifyframework.auth.AuthCategory
-import com.amplifyframework.auth.AuthChannelEventName
 import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
 import com.amplifyframework.auth.cognito.AWSCognitoAuthSession
@@ -11,15 +10,13 @@ import com.amplifyframework.auth.result.AuthSessionResult
 import com.amplifyframework.core.InitializationStatus
 import com.amplifyframework.hub.HubCategory
 import com.amplifyframework.hub.HubChannel
-import com.amplifyframework.hub.SubscriptionToken
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -31,72 +28,43 @@ internal class CognitoAuth(
   private val hub: HubCategory
 ) : AuthProvider {
 
-  private val _authStates = MutableStateFlow<AuthState>(AuthState.Initializing)
-  override val authStates: StateFlow<AuthState> get() = _authStates
+  override val authStates: StateFlow<AuthState> get() = authStateFlow()
 
-  private var subToken: SubscriptionToken? = null
-
-  init {
-    _authStates.subscriptionCount
-      .map { count -> count > 0 } // map count into active/inactive flag
-      .distinctUntilChanged() // only react to true<->false changes
-      .onEach { isActive -> // configure an action
-        if (isActive) subscribeToAuthEvent() else unSubscribeToAuthEvent()
-      }
-      .launchIn(scope)
-  }
-
-  private fun subscribeToAuthEvent() {
-    subToken = hub.subscribe(HubChannel.AUTH) { event ->
+  private fun authStateFlow() = callbackFlow {
+    val token = hub.subscribe(HubChannel.AUTH) { event ->
       when (event.name) {
         InitializationStatus.SUCCEEDED.name -> {
           Timber.i("Auth successfully initialized")
         }
         InitializationStatus.FAILED.name -> {
-          Timber.i("Auth failed to succeed")
+          Timber.e("Auth failed to succeed")
+          throw IllegalStateException("Cognito Auth Failed to initialize")
         }
         else -> {
-          when (AuthChannelEventName.valueOf(event.name)) {
-            AuthChannelEventName.SIGNED_IN -> {
-              Timber.i("Auth just became signed in.")
-              setAuthState()
-            }
-            AuthChannelEventName.SIGNED_OUT -> {
-              Timber.i("Auth just became signed out.")
-              _authStates.value = AuthState.SignOut
-            }
-            AuthChannelEventName.SESSION_EXPIRED -> {
-              Timber.i("Auth session just expired.")
-              setAuthState()
-            }
-          }
+          offer(Unit)
         }
       }
     }
-    setAuthState()
-  }
+    offer(Unit)
+    awaitClose {
+      hub.unsubscribe(token)
+    }
+  }.map {
+    getCurrentState()
+  }.stateIn(scope, SharingStarted.WhileSubscribed(), AuthState.Initializing)
 
-  private fun unSubscribeToAuthEvent() {
-    val token = subToken
-    if (token != null) hub.unsubscribe(token)
-  }
-
-  private fun setAuthState() {
-    scope.launch {
-      val session = fetchAuthSession()
-      if (session.isSignedIn) {
-        val userId = session.identityId.value!!
-        val poolTokensResult = session.userPoolTokens
-        if (poolTokensResult.type == AuthSessionResult.Type.FAILURE) {
-          _authStates.value =
-            AuthState.SessionExpired(userId)
-        } else {
-          _authStates.value =
-            AuthState.SignedIn(userId, poolTokensResult.value!!.accessToken)
-        }
+  private suspend fun getCurrentState(): AuthState {
+    val session = fetchAuthSession()
+    return if (session.isSignedIn) {
+      val userId = session.identityId.value!!
+      val poolTokensResult = session.userPoolTokens
+      if (poolTokensResult.type == AuthSessionResult.Type.FAILURE) {
+        AuthState.SessionExpired(userId)
       } else {
-        _authStates.value = AuthState.SignOut
+        AuthState.SignedIn(userId, poolTokensResult.value!!.accessToken)
       }
+    } else {
+      AuthState.SignOut
     }
   }
 

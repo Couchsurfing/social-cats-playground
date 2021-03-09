@@ -34,8 +34,8 @@ object AppModule {
 
   @Singleton
   @Provides
-  fun provideRegion(): String {
-    return System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable())
+  fun provideRegion(): Region {
+    return Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable()))
   }
 
   @Singleton
@@ -46,11 +46,11 @@ object AppModule {
 
   @Singleton
   @Provides
-  fun provideS3Client(region: String, httpClient: SdkHttpClient): S3Client {
+  fun provideS3Client(region: Region, httpClient: SdkHttpClient): S3Client {
     return S3Client.builder()
       .httpClient(httpClient)
       .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-      .region(Region.of(region))
+      .region(region)
       .overrideConfiguration(ClientOverrideConfiguration.builder().build())
       .endpointOverride(URI("https://s3.$region.amazonaws.com"))
       .build()
@@ -58,11 +58,11 @@ object AppModule {
 
   @Singleton
   @Provides
-  fun provideDynamoDbClient(region: String, httpClient: SdkHttpClient): DynamoDbClient {
+  fun provideDynamoDbClient(region: Region, httpClient: SdkHttpClient): DynamoDbClient {
     return DynamoDbClient.builder()
       .httpClient(httpClient)
       .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-      .region(Region.of(region))
+      .region(region)
       .overrideConfiguration(ClientOverrideConfiguration.builder().build())
       .endpointOverride(URI("https://dynamodb.$region.amazonaws.com"))
       .build()

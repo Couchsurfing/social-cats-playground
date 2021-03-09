@@ -8,6 +8,7 @@ val functionJars by configurations.creating {
 
 dependencies {
   implementation(project(":feature:profile:backend:repository:dynamodb-impl:schema"))
+  implementation(project(":feature:event-registry"))
   implementation(kotlin("stdlib"))
 
   implementation("software.amazon.awscdk:dynamodb:_")
@@ -25,11 +26,16 @@ dependencies {
   implementation("software.amazon.awscdk:glue:_")
   implementation("software.amazon.awscdk:waf:_")
   implementation("software.amazon.awscdk:sqs:_")
+  implementation("software.amazon.awscdk:events:_")
+  implementation("software.amazon.awscdk:events-targets:_")
+  implementation("software.amazon.awscdk:secretsmanager:_")
 
   implementation("software.amazon.awsconstructs:core:_")
   implementation("software.amazon.awsconstructs:lambdas3:_")
   implementation("software.amazon.awsconstructs:lambdadynamodb:_")
   implementation("software.amazon.awsconstructs:dynamodbstreamlambda:_")
+  implementation("software.amazon.awsconstructs:sqslambda:_")
+  implementation("software.amazon.awsconstructs:lambdasqs:_")
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:_")
   testImplementation("org.junit.jupiter:junit-jupiter-engine:_")
@@ -39,6 +45,8 @@ dependencies {
   functionJars(project(":feature:image-processing:backend:functions:image-upload-url", configuration = "shadow"))
   functionJars(project(":feature:image-processing:backend:functions:image-upload-dynamo", configuration = "shadow"))
   functionJars(project(":feature:push-notifications:backend:functions:create-device-dynamo", configuration = "shadow"))
+  functionJars(project(":feature:push-notifications:backend:functions:process-image-notification", configuration = "shadow"))
+  functionJars(project(":feature:push-notifications:backend:functions:send-notification", configuration = "shadow"))
   functionJars(project(":feature:profile:backend:functions:dynamodb-stream", configuration = "shadow"))
 }
 

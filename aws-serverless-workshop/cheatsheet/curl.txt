@@ -1,0 +1,4 @@
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"id":"conversationId","name":"Hanging out"}' \
+  https://re87nxmw05.execute-api.us-east-1.amazonaws.com/v1/conversations

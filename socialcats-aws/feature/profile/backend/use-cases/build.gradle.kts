@@ -2,7 +2,6 @@ plugins {
   kotlin("jvm")
 }
 
-group = "com.nicolasmilliard.socialcatsaws.profile"
 version = "1.0-SNAPSHOT"
 
 dependencies {
@@ -16,8 +15,6 @@ dependencies {
 
   api("javax.inject:javax.inject:_")
 
-  implementation("org.apache.logging.log4j:log4j-api:_")
-  implementation("org.apache.logging.log4j:log4j-core:_")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:_")
   implementation("io.github.microutils:kotlin-logging-jvm:_")
 }

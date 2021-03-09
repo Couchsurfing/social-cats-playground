@@ -86,12 +86,6 @@ internal val USERS_TABLE_SCHEMA: TableSchema<UserItem> = TableSchema.builder(Use
       .getter(UserItem::image_count)
       .setter { obj, v -> obj.image_count = v }
       .tags(StaticAttributeTags.updateBehavior(UpdateBehavior.WRITE_IF_NOT_EXISTS))
-  }.addAttribute(
-    String::class.java
-  ) {
-    it.name(Schema.UserItem.Attributes.NOTIFICATION_KEY)
-      .getter(UserItem::notificationKey)
-      .setter { obj, v -> obj.notificationKey = v }
   }
   .build()
 

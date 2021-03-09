@@ -7,7 +7,6 @@ plugins {
   id("com.squareup.anvil")
 }
 
-group = "com.nicolasmilliard.socialcatsaws.profile.backend.functions"
 version = "1.0-SNAPSHOT"
 
 tasks.withType<ShadowJar> {
@@ -41,7 +40,18 @@ artifacts {
 }
 
 dependencies {
-
+  implementation(project(":feature:profile:backend:repository:dynamodb-impl:schema"))
+  implementation(project(":feature:event-registry"))
+  implementation(project(":feature:event-publisher:event-bridge")) {
+    exclude(group = "software.amazon.awssdk", module = "http-client-spi")
+    exclude(group = "software.amazon.awssdk", module = "apache-client")
+    exclude(group = "software.amazon.awssdk", module = "netty-nio-client")
+  }
+  implementation(project(":feature:event-publisher:sqs")) {
+    exclude(group = "software.amazon.awssdk", module = "http-client-spi")
+    exclude(group = "software.amazon.awssdk", module = "apache-client")
+    exclude(group = "software.amazon.awssdk", module = "netty-nio-client")
+  }
   implementation(project(":library:cloud-metrics"))
   implementation(project(":library:di-scope"))
 
@@ -52,7 +62,6 @@ dependencies {
 
   implementation(platform("software.amazon.awssdk:bom:_"))
   implementation("software.amazon.awssdk:lambda")
-
   implementation("com.amazonaws:aws-lambda-java-core:_")
   implementation("com.amazonaws:aws-lambda-java-events:_")
 
@@ -64,6 +73,22 @@ dependencies {
 
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j18-impl:_")
   runtimeOnly("com.amazonaws:aws-lambda-java-log4j2:_")
+
   testImplementation("org.junit.jupiter:junit-jupiter-api:_")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:_")
+
+  testImplementation("com.amazonaws:aws-lambda-java-tests:_")
+
+  kaptTest("com.google.dagger:dagger-compiler:_")
+}
+
+tasks.test {
+  useJUnitPlatform()
+  testLogging {
+    events("passed", "skipped", "failed")
+  }
+}
+
+kapt {
+  correctErrorTypes = true
 }

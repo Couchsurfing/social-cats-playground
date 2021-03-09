@@ -2,6 +2,7 @@ package com.nicolasmilliard.socialcatsaws.backend
 
 import com.nicolasmilliard.socialcatsaws.backend.core.Api
 import com.nicolasmilliard.socialcatsaws.backend.core.Auth
+import com.nicolasmilliard.socialcatsaws.backend.core.EventBusService
 import com.nicolasmilliard.socialcatsaws.backend.core.ImagingService
 import com.nicolasmilliard.socialcatsaws.backend.core.PushNotificationService
 import com.nicolasmilliard.socialcatsaws.backend.core.S3Monitoring
@@ -81,7 +82,16 @@ class SocialCatsService(scope: Construct, id: String, props: StackProps, functio
     Tags.of(this).add("stage", envName)
     val appNameWithEnv = "social-cats-$envName"
 
-    val usersRepository = UserRepository(this, "UsersRepository", isProd, functionsProp, props.env!!.region!!, appNameWithEnv)
+    val eventBusService = EventBusService(this, "EventBusService")
+    val usersRepository = UserRepository(
+      scope = this,
+      id = "UsersRepository",
+      isProd = isProd,
+      functionsProp = functionsProp,
+      region = props.env!!.region!!,
+      appName = appNameWithEnv,
+      eventBus = eventBusService.eventBus
+    )
     ConversationsRepository(this, "ConversationsRepository", isProd)
 
     val auth = Auth(this, "AuthConstruct", isProd)
@@ -104,6 +114,7 @@ class SocialCatsService(scope: Construct, id: String, props: StackProps, functio
       isProd = isProd,
       region = props.env!!.region!!,
       table = usersRepository.dynamodbTable,
+      eventBus = eventBusService.eventBus
     )
 
     val imageHandler = ImagingService(
@@ -175,7 +186,7 @@ class SocialCatsService(scope: Construct, id: String, props: StackProps, functio
       .tablePermissions("ReadWrite")
       .build()
     val function = s3ImageToDynamoDB.lambdaFunction
-    function.addToRolePolicy(getLambdaInsightPolicy())
+    function.role?.addManagedPolicy(getLambdaInsightPolicy())
     function.addEventSource(
       S3EventSource.Builder.create(s3ImageBucket).events(
         listOf(EventType.OBJECT_CREATED)
@@ -202,7 +213,7 @@ class SocialCatsService(scope: Construct, id: String, props: StackProps, functio
       .tablePermissions("Write")
       .build()
 
-    lambdaToDynamoDB.lambdaFunction.addToRolePolicy(getLambdaInsightPolicy())
+    lambdaToDynamoDB.lambdaFunction.role?.addManagedPolicy(getLambdaInsightPolicy())
     userPool.addTrigger(
       UserPoolOperation.POST_CONFIRMATION,
       lambdaToDynamoDB.lambdaFunction

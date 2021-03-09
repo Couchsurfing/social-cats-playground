@@ -19,3 +19,7 @@ dependencies {
   kapt("com.google.dagger:hilt-android-compiler:_")
   implementation("androidx.startup:startup-runtime:_")
 }
+
+kapt {
+  correctErrorTypes = true
+}

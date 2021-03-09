@@ -1,0 +1,132 @@
+{
+  "id": "b0e7d1d8-c3bc-d215-9b4c-3a3357ccb26c",
+  "region": "us-east-1",
+  "account": "690127176154",
+  "detail-type": "sc.dynamodb-stream-new-image-record-list",
+  "detail": {
+    "records": [
+      {
+        "eventID": "f2877f28c7d9decae514ac10c84aa203",
+        "eventName": "INSERT",
+        "eventVersion": "1.1",
+        "eventSource": "aws:dynamodb",
+        "awsRegion": "us-east-1",
+        "dynamodb": {
+          "approximateCreationDateTime": 1616183282000,
+          "keys": {
+            "SK": {
+              "s": "IMAGE#2021-03-19T19:47:41.439Z#u/c603f136-be52-4e28-a6aa-524b3ede3718/1031dda2-7d32-4670-a937-6fd73ffcb5fa",
+              "n": null,
+              "b": null,
+              "m": null,
+              "l": null,
+              "null": null,
+              "bool": null,
+              "ss": null,
+              "ns": null,
+              "bs": null
+            },
+            "PK": {
+              "s": "USER#id1",
+              "n": null,
+              "b": null,
+              "m": null,
+              "l": null,
+              "null": null,
+              "bool": null,
+              "ss": null,
+              "ns": null,
+              "bs": null
+            }
+          },
+          "newImage": {
+            "UserId": {
+              "s": "id1",
+              "n": null,
+              "b": null,
+              "m": null,
+              "l": null,
+              "null": null,
+              "bool": null,
+              "ss": null,
+              "ns": null,
+              "bs": null
+            },
+            "CreatedAt": {
+              "s": "2021-03-19T19:47:41.439Z",
+              "n": null,
+              "b": null,
+              "m": null,
+              "l": null,
+              "null": null,
+              "bool": null,
+              "ss": null,
+              "ns": null,
+              "bs": null
+            },
+            "ItemType": {
+              "s": "IMAGE",
+              "n": null,
+              "b": null,
+              "m": null,
+              "l": null,
+              "null": null,
+              "bool": null,
+              "ss": null,
+              "ns": null,
+              "bs": null
+            },
+            "ImageId": {
+              "s": "u/c603f136-be52-4e28-a6aa-524b3ede3718/1031dda2-7d32-4670-a937-6fd73ffcb5fa",
+              "n": null,
+              "b": null,
+              "m": null,
+              "l": null,
+              "null": null,
+              "bool": null,
+              "ss": null,
+              "ns": null,
+              "bs": null
+            },
+            "SK": {
+              "s": "IMAGE#2021-03-19T19:47:41.439Z#u/c603f136-be52-4e28-a6aa-524b3ede3718/1031dda2-7d32-4670-a937-6fd73ffcb5fa",
+              "n": null,
+              "b": null,
+              "m": null,
+              "l": null,
+              "null": null,
+              "bool": null,
+              "ss": null,
+              "ns": null,
+              "bs": null
+            },
+            "PK": {
+              "s": "USER#c603f136-be52-4e28-a6aa-524b3ede3718",
+              "n": null,
+              "b": null,
+              "m": null,
+              "l": null,
+              "null": null,
+              "bool": null,
+              "ss": null,
+              "ns": null,
+              "bs": null
+            }
+          },
+          "oldImage": null,
+          "sequenceNumber": "65575600000000009042375360",
+          "sizeBytes": 472,
+          "streamViewType": "NEW_IMAGE"
+        },
+        "userIdentity": null,
+        "eventSourceARN": "arn:aws:dynamodb:us-east-1:690127176154:table/Users/stream/2021-03-06T00:45:26.063"
+      }
+    ]
+  },
+  "resources": [
+    "arn:aws:dynamodb:us-east-1:690127176154:table/Users/stream/2021-03-06T00:45:26.063"
+  ],
+  "source": "sc.profile-dynamodb-stream",
+  "time": "2021-03-19T19:48:07Z",
+  "version": "0"
+}

@@ -8,7 +8,6 @@ plugins {
   id("com.squareup.anvil")
 }
 
-group = "com.nicolasmilliard.socialcatsaws.backend.functions"
 version = "1.0-SNAPSHOT"
 
 tasks.withType<ShadowJar> {
@@ -68,4 +67,8 @@ dependencies {
   runtimeOnly("com.amazonaws:aws-lambda-java-log4j2:_")
   testImplementation("org.junit.jupiter:junit-jupiter-api:_")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:_")
+}
+
+kapt {
+  correctErrorTypes = true
 }

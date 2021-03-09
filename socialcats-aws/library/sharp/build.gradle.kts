@@ -2,7 +2,6 @@ plugins {
   kotlin("jvm")
 }
 
-group = "com.nicolasmilliard.socialcatsaws.sharp"
 version = "1.0-SNAPSHOT"
 
 dependencies {

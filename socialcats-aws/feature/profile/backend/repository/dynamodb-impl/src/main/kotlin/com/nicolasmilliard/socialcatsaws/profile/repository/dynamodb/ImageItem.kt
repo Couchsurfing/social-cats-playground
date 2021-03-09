@@ -33,7 +33,7 @@ internal val IMAGES_TABLE_SCHEMA: TableSchema<ImageItem> = TableSchema.builder(I
   .addAttribute(
     String::class.java
   ) {
-    it.name(Schema.ImageItem.Attributes.MESSAGE_ID)
+    it.name(Schema.ImageItem.Attributes.IMAGE_ID)
       .getter(ImageItem::id)
       .setter { obj, v -> obj.id = v }
   }

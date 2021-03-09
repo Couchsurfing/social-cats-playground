@@ -13,3 +13,7 @@ dependencies {
   api("com.google.dagger:hilt-android:_")
   kapt("com.google.dagger:hilt-compiler:_")
 }
+
+kapt {
+  correctErrorTypes = true
+}

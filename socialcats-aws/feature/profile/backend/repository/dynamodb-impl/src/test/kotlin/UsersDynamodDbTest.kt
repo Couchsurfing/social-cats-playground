@@ -12,33 +12,24 @@ import com.nicolasmilliard.socialcatsaws.profile.model.User
 import com.nicolasmilliard.socialcatsaws.profile.repository.InsertResult
 import kotlinx.datetime.Clock
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 import software.amazon.awssdk.auth.credentials.AwsCredentials
-import software.amazon.awssdk.core.waiters.WaiterResponse
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
-import software.amazon.awssdk.services.dynamodb.model.BillingMode
-import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest
-import software.amazon.awssdk.services.dynamodb.model.CreateTableResponse
-import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest
-import software.amazon.awssdk.services.dynamodb.model.DescribeTableRequest
-import software.amazon.awssdk.services.dynamodb.model.DescribeTableResponse
-import software.amazon.awssdk.services.dynamodb.model.DynamoDbException
-import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement
-import software.amazon.awssdk.services.dynamodb.model.KeyType
-import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType
-import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter
 import java.net.URI
 
 internal class UsersDynamodDbTest {
   lateinit var sClient: DynamoDbClient
   lateinit var sServer: DynamoDBProxyServer
+  lateinit var usersDbUtil: UsersDbUtil
 
   @BeforeEach
   fun beforeEach() {
@@ -54,7 +45,9 @@ internal class UsersDynamodDbTest {
       fail(e.message)
     }
     createAmazonDynamoDBClient()
-    createMyTables()
+
+    usersDbUtil = UsersDbUtil(sClient)
+    usersDbUtil.createTable()
 
     val scanResultBefore = sClient.scan { it.tableName(Schema.TABLE_NAME).build() }
     assertEquals(0, scanResultBefore.count())
@@ -82,62 +75,6 @@ internal class UsersDynamodDbTest {
         }
       }
       .build()
-  }
-
-  private fun deleteTables() {
-    val dbWaiter: DynamoDbWaiter = sClient.waiter()
-    val request = DeleteTableRequest.builder()
-      .tableName(Schema.TABLE_NAME)
-      .build()
-    val response = sClient.deleteTable(request)
-    val waiterResponse: WaiterResponse<DescribeTableResponse> =
-      dbWaiter.waitUntilTableNotExists(DescribeTableRequest.builder().tableName(Schema.TABLE_NAME).build())
-    waiterResponse.matched().response().ifPresent(System.out::println)
-    val deletedTable = response.tableDescription().tableName()
-    println("Deleted $deletedTable")
-  }
-  private fun createMyTables() {
-    val dbWaiter: DynamoDbWaiter = sClient.waiter()
-    val request: CreateTableRequest = CreateTableRequest.builder()
-      .attributeDefinitions(
-        AttributeDefinition.builder()
-          .attributeName(Schema.SharedAttributes.PARTITION_KEY)
-          .attributeType(ScalarAttributeType.S)
-          .build(),
-        AttributeDefinition.builder()
-          .attributeName(Schema.SharedAttributes.SORT_KEY)
-          .attributeType(ScalarAttributeType.S)
-          .build(),
-      )
-      .keySchema(
-        KeySchemaElement.builder()
-          .attributeName(Schema.SharedAttributes.PARTITION_KEY)
-          .keyType(KeyType.HASH)
-          .build(),
-        KeySchemaElement.builder()
-          .attributeName(Schema.SharedAttributes.SORT_KEY)
-          .keyType(KeyType.RANGE)
-          .build(),
-      )
-      .billingMode(BillingMode.PAY_PER_REQUEST)
-      .tableName(Schema.TABLE_NAME)
-      .build()
-
-    try {
-      val response: CreateTableResponse = sClient.createTable(request)
-      val tableRequest: DescribeTableRequest = DescribeTableRequest.builder()
-        .tableName(Schema.TABLE_NAME)
-        .build()
-
-      // Wait until the Amazon DynamoDB table is created
-      val waiterResponse: WaiterResponse<DescribeTableResponse> =
-        dbWaiter.waitUntilTableExists(tableRequest)
-      waiterResponse.matched().response().ifPresent(System.out::println)
-      val newTable = response.tableDescription().tableName()
-      println("Created $newTable")
-    } catch (e: DynamoDbException) {
-      fail(e)
-    }
   }
 
   @Test
@@ -185,7 +122,7 @@ internal class UsersDynamodDbTest {
     val imageItem = scanResult.items()[0]
     assertEquals(Schema.UserItem.KEY_PREFIX + image.userId, imageItem.getValue(Schema.SharedAttributes.PARTITION_KEY).s())
     assertEquals("${Schema.ImageItem.KEY_PREFIX}${image.createdAt}#${image.id}", imageItem.getValue(Schema.SharedAttributes.SORT_KEY).s())
-    assertEquals(image.id, imageItem.getValue(Schema.ImageItem.Attributes.MESSAGE_ID).s())
+    assertEquals(image.id, imageItem.getValue(Schema.ImageItem.Attributes.IMAGE_ID).s())
     assertEquals(image.userId, imageItem.getValue(Schema.ImageItem.Attributes.USER_ID).s())
   }
 
@@ -205,7 +142,7 @@ internal class UsersDynamodDbTest {
     assertEquals(1, item.getValue(Schema.UserItem.Attributes.IMAGE_COUNT).n().toInt())
 
     val imageItem = scanResult.items()[0]
-    assertEquals(image.id, imageItem.getValue(Schema.ImageItem.Attributes.MESSAGE_ID).s())
+    assertEquals(image.id, imageItem.getValue(Schema.ImageItem.Attributes.IMAGE_ID).s())
     assertEquals(image.userId, imageItem.getValue(Schema.ImageItem.Attributes.USER_ID).s())
   }
 
@@ -229,7 +166,7 @@ internal class UsersDynamodDbTest {
     assertEquals(1, item.getValue(Schema.UserItem.Attributes.IMAGE_COUNT).n().toInt())
 
     val imageItem = scanResult.items()[0]
-    assertEquals(image.id, imageItem.getValue(Schema.ImageItem.Attributes.MESSAGE_ID).s())
+    assertEquals(image.id, imageItem.getValue(Schema.ImageItem.Attributes.IMAGE_ID).s())
     assertEquals(image.userId, imageItem.getValue(Schema.ImageItem.Attributes.USER_ID).s())
   }
 
@@ -258,7 +195,7 @@ internal class UsersDynamodDbTest {
     assertEquals(1, item.getValue(Schema.UserItem.Attributes.IMAGE_COUNT).n().toInt())
 
     val imageItem = scanResult.items()[0]
-    assertEquals(image.id, imageItem.getValue(Schema.ImageItem.Attributes.MESSAGE_ID).s())
+    assertEquals(image.id, imageItem.getValue(Schema.ImageItem.Attributes.IMAGE_ID).s())
     assertEquals(image.userId, imageItem.getValue(Schema.ImageItem.Attributes.USER_ID).s())
   }
 
@@ -301,14 +238,18 @@ internal class UsersDynamodDbTest {
       "fr"
     )
 
-    val result = usersDynamoDb.insertDevice(device)
-    assertEquals(InsertResult.Added, result)
+    usersDynamoDb.insertDevice(device)
     val scanResult = sClient.scan { it.tableName(Schema.TABLE_NAME).build() }
 
     assertEquals(2, scanResult.count())
     val items = scanResult.items()
-    checkUserItem(user, items[1])
-    checkDeviceItem(device, items[0])
+    if (items[0].getValue(Schema.SharedAttributes.SORT_KEY).s().startsWith(Schema.DeviceItem.KEY_PREFIX)) {
+      checkUserItem(user, items[1])
+      checkDeviceItem(device, items[0])
+    } else {
+      checkUserItem(user, items[0])
+      checkDeviceItem(device, items[1])
+    }
   }
 
   @Test
@@ -328,16 +269,112 @@ internal class UsersDynamodDbTest {
       12,
       "fr"
     )
-    val result = usersDynamoDb.insertDevice(device)
-    assertEquals(InsertResult.Added, result)
-    val result2 = usersDynamoDb.insertDevice(device)
-    assertEquals(InsertResult.AlreadyExist, result2)
+    usersDynamoDb.insertDevice(device)
+    usersDynamoDb.insertDevice(device)
 
     val scanResult = sClient.scan { it.tableName(Schema.TABLE_NAME).build() }
     assertEquals(2, scanResult.count())
     val items = scanResult.items()
-    checkUserItem(user, items[1])
-    checkDeviceItem(device, items[0])
+    if (items[0].getValue(Schema.SharedAttributes.SORT_KEY).s().startsWith(Schema.DeviceItem.KEY_PREFIX)) {
+      checkUserItem(user, items[1])
+      checkDeviceItem(device, items[0])
+    } else {
+      checkUserItem(user, items[0])
+      checkDeviceItem(device, items[1])
+    }
+  }
+
+  @Test
+  fun testAddDeviceAlreadyExistFoAnotherUser() {
+
+    val usersDynamoDb = UsersDynamoDb(sClient, Schema.TABLE_NAME, FakeCloudMetrics())
+    val user = User("id", Clock.System.now(), "email", true, "Name", Avatar("imageId"), 0)
+    usersDynamoDb.updateUser(user)
+    val user2 = User("id2", Clock.System.now(), "email", true, "Name", Avatar("imageId"), 0)
+    usersDynamoDb.updateUser(user2)
+
+    val device = Device(
+      user.id,
+      "InstanceId",
+      Clock.System.now(),
+      "token",
+      DeviceIdProvider.FCM,
+      SupportedPlatform.ANDROID,
+      12,
+      "fr"
+    )
+    usersDynamoDb.insertDevice(device)
+
+    val device2 = Device(
+      user2.id,
+      "InstanceId",
+      Clock.System.now(),
+      "token",
+      DeviceIdProvider.FCM,
+      SupportedPlatform.ANDROID,
+      12,
+      "en"
+    )
+    usersDynamoDb.insertDevice(device2)
+
+    val scanResult = sClient.scan { it.tableName(Schema.TABLE_NAME).build() }
+    assertEquals(3, scanResult.count())
+    val items = scanResult.items()
+
+    checkUserItem(user, items[0])
+    checkUserItem(user2, items[1])
+    checkDeviceItem(device2, items[2])
+  }
+
+  @Test
+  fun testGetDeviceTokens() {
+
+    val usersDynamoDb = UsersDynamoDb(sClient, Schema.TABLE_NAME, FakeCloudMetrics())
+    val user = User("id", Clock.System.now(), "email", true, "Name", Avatar("imageId"), 0)
+    usersDynamoDb.updateUser(user)
+    val user2 = User("id2", Clock.System.now(), "email", true, "Name", Avatar("imageId"), 0)
+    usersDynamoDb.updateUser(user2)
+
+    val device = Device(
+      user.id,
+      "InstanceId",
+      Clock.System.now(),
+      "token",
+      DeviceIdProvider.FCM,
+      SupportedPlatform.ANDROID,
+      12,
+      "fr"
+    )
+    usersDynamoDb.insertDevice(device)
+
+    val device2 = Device(
+      user2.id,
+      "InstanceId",
+      Clock.System.now(),
+      "token2",
+      DeviceIdProvider.FCM,
+      SupportedPlatform.ANDROID,
+      12,
+      "en"
+    )
+    usersDynamoDb.insertDevice(device2)
+    val device3 = Device(
+      user2.id,
+      "InstanceId",
+      Clock.System.now(),
+      "token3",
+      DeviceIdProvider.FCM,
+      SupportedPlatform.ANDROID,
+      12,
+      "en"
+    )
+    usersDynamoDb.insertDevice(device3)
+
+    val result = usersDynamoDb.getDeviceTokens(user2.id, 5, null)
+    assertNull(result.nextPageToken)
+    assertEquals(2, result.tokens.size)
+    assertEquals("token2", result.tokens[0])
+    assertEquals("token3", result.tokens[1])
   }
 
   @Test
@@ -385,8 +422,9 @@ internal class UsersDynamodDbTest {
   }
 
   private fun checkDeviceItem(device: Device, item: Map<String, AttributeValue>) {
-    assertEquals(Schema.UserItem.KEY_PREFIX + device.userId, item.getValue(Schema.SharedAttributes.PARTITION_KEY).s())
-    assertEquals("${Schema.DeviceItem.KEY_PREFIX}${device.instanceId}", item.getValue(Schema.SharedAttributes.SORT_KEY).s())
+    assertEquals("${Schema.DeviceItem.KEY_PREFIX}${device.token}", item.getValue(Schema.SharedAttributes.PARTITION_KEY).s())
+    assertEquals("${Schema.UserItem.KEY_PREFIX}${device.userId}", item.getValue(Schema.SharedAttributes.SORT_KEY).s())
+    assertEquals(Schema.DeviceItem.TYPE, item.getValue(Schema.SharedAttributes.ITEM_TYPE).s())
     assertEquals(device.instanceId, item.getValue(Schema.DeviceItem.Attributes.INSTANCE_ID).s())
     assertEquals(device.createdAt.toString(), item.getValue(Schema.DeviceItem.Attributes.CREATED_AT).s())
     assertEquals(device.token, item.getValue(Schema.DeviceItem.Attributes.TOKEN).s())
