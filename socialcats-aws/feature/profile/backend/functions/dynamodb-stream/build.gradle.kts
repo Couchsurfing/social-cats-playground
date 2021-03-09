@@ -42,6 +42,7 @@ artifacts {
 
 dependencies {
 
+  implementation(project(":library:dynamodb-to-eventbridge"))
   implementation(project(":library:cloud-metrics"))
   implementation(project(":library:di-scope"))
 
@@ -54,7 +55,6 @@ dependencies {
   implementation("software.amazon.awssdk:lambda")
 
   implementation("com.amazonaws:aws-lambda-java-core:_")
-  implementation("com.amazonaws:aws-lambda-java-events:_")
 
   implementation("software.amazon.awssdk:url-connection-client")
 
@@ -64,6 +64,7 @@ dependencies {
 
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j18-impl:_")
   runtimeOnly("com.amazonaws:aws-lambda-java-log4j2:_")
+
   testImplementation("org.junit.jupiter:junit-jupiter-api:_")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:_")
 }

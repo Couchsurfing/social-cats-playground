@@ -52,4 +52,5 @@ include(":library:object-store:fake-wiring")
 include(":library:android-datastore")
 include(":library:android-activity-result")
 include(":library:android-text-resource")
-
+include(":library:dynamodb-to-eventbridge")
+include(":library:aws-lambda-kotlin-events")

@@ -38,7 +38,7 @@ public class UploadImageUseCase @Inject constructor(
     return CreateSignedUrl.CreateSignedUrlData(preSignedUrl.url, preSignedUrl.headers)
   }
 
-  public fun onNewStoredImage(storeKey: String, size: Long, eventTime: String): Unit {
+  public fun onNewStoredImage(storeKey: String, size: Long, eventTime: String) {
     val imageStoreKey = ImageStoreKey(storeKey)
     val userId = imageStoreKey.userId
     withLoggingContext("UserId" to userId) {

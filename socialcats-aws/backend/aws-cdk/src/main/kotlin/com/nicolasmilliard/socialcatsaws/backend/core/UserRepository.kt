@@ -14,7 +14,6 @@ import software.amazon.awscdk.services.dynamodb.BillingMode
 import software.amazon.awscdk.services.dynamodb.StreamViewType
 import software.amazon.awscdk.services.dynamodb.Table
 import software.amazon.awscdk.services.dynamodb.TableEncryption
-import software.amazon.awscdk.services.lambda.destinations.SqsDestination
 import software.amazon.awsconstructs.services.dynamodbstreamlambda.DynamoDBStreamToLambda
 import software.amazon.awsconstructs.services.dynamodbstreamlambda.DynamoDBStreamToLambdaProps
 import java.util.Properties
@@ -25,7 +24,8 @@ class UserRepository(
   isProd: Boolean,
   functionsProp: Properties,
   region: String,
-  appName: String
+  appName: String,
+  eventBusName: String,
 ) : Construct(scope, id) {
 
   val dynamodbTable: Table
@@ -45,16 +45,21 @@ class UserRepository(
             construct = this,
             asset = functionsProp.getProperty("dynamodb-stream"),
             region = region,
-            handler = "com.nicolasmilliard.socialcatsaws.profile.backend.functions.OnNewImage",
+            handler = "com.nicolasmilliard.socialcatsaws.profile.backend.functions.OnDynamoStream",
             description = "Function to handle Dynamo stream",
-            version = "1.0.0-SNAPSHOT",
+            version = "1.0.4-SNAPSHOT",
             layerId = "DynamoToStreamLayerId",
             env = mapOf(
-              "APP_NAME" to appName
+              "APP_NAME" to appName,
+              "EVENT_BUS_NAME" to eventBusName,
+              "MAX_ATTEMPT" to "1",
+              "DLQ_URL" to dlq.queueUrl
             ),
-            onFailure = SqsDestination(dlq)
           )
         )
+        .dynamoEventSourceProps(mapOf(
+          "retryAttempts" to 5,
+          "batchSize" to 10))
         .build()
     )
 
